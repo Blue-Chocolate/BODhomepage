@@ -73,12 +73,12 @@ class BlogResource extends Resource
 
                         Forms\Components\Select::make('blog_category_id')
                             ->label('التصنيف')
-                            ->relationship('category', 'name')
+                            ->relationship('category', 'title')
                             ->searchable()
                             ->preload()
                             ->required()
                             ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
+                                Forms\Components\TextInput::make('title')
                                     ->label('اسم التصنيف')
                                     ->required()
                                     ->maxLength(255)
@@ -201,7 +201,7 @@ class BlogResource extends Resource
                     ->copyable()
                     ->copyMessage('تم نسخ العنوان!'),
 
-                Tables\Columns\TextColumn::make('category.name')
+                Tables\Columns\TextColumn::make('category.title')
                     ->label('التصنيف')
                     ->searchable()
                     ->sortable()
@@ -255,7 +255,7 @@ class BlogResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('blog_category_id')
                     ->label('التصنيف')
-                    ->relationship('category', 'name')
+                    ->relationship('category', 'title')
                     ->searchable()
                     ->preload()
                     ->multiple(),
@@ -370,7 +370,7 @@ class BlogResource extends Resource
     public static function getGlobalSearchResultDetails(\Illuminate\Database\Eloquent\Model $record): array
     {
         return [
-            'التصنيف' => $record->category?->name,
+            'التصنيف' => $record->category?->title,
             'الكاتب'  => $record->author,
             'الحالة'  => $record->is_published ? 'منشور' : 'غير منشور',
         ];
