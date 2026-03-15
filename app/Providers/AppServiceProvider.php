@@ -1,3 +1,7 @@
+<?php
+
+namespace App\Providers;
+
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
@@ -21,8 +25,8 @@ class AppServiceProvider extends ServiceProvider
             return request()->query('secret') === env('SCRAMBLE_SECRET');
         });
 
-        // Tell Scramble that auth:jwt = Bearer token (JWT)
-        Scramble::configure(function (OpenApi $openApi) {
+        // Tell Scramble JWT is a Bearer token auth
+        Scramble::afterOpenApiGenerated(function (OpenApi $openApi) {
             $openApi->secure(
                 SecurityScheme::http('bearer', 'JWT')
             );
