@@ -8,7 +8,7 @@ return [
      * If you need to change this behavior, you can add your custom routes resolver using `Scramble::routes()`.
      */
     'api_path' => 'api',
-    'secrets'=>'12345',
+'secrets' => [env('SCRAMBLE_SECRET')],
 
     /*
      * Your API domain. By default, app domain is used. This is also a part of the default API routes
@@ -129,9 +129,9 @@ return [
     'flatten_deep_query_parameters' => true,
 
     'middleware' => [
-        'web',
-        RestrictedDocsAccess::class,
-    ],
+    'web',
+    \Dedoc\Scramble\Http\Middleware\RestrictedDocsAccess::class,
+],
 
     'extensions' => [],
 ];
