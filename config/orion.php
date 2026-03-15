@@ -6,7 +6,7 @@ return [
         'controllers' => 'App\\Http\\Controllers\\',
     ],
     'auth' => [
-        'guard' => 'JWT',
+        'guard' => 'jwt',
     ],
     'specs' => [
         'info' => [
