@@ -12,10 +12,21 @@ class StoreBlogAction
         private readonly BlogRepository $repository
     ) {}
 
-    public function execute(array $data): Blog
+    public function execute(array $data): Blog|array
+    {
+        // Single blog
+        if (!isset($data[0])) {
+            return $this->createSingle($data);
+        }
+
+        // Multiple blogs
+        return array_map(fn($item) => $this->createSingle($item), $data);
+    }
+
+    private function createSingle(array $data): Blog
     {
         if (empty($data['slug'])) {
-            $data['slug'] = Str::slug($data['title']);
+            $data['slug'] = Str::slug($data['title']) . '-' . uniqid();
         }
 
         return $this->repository->create($data);

@@ -31,12 +31,16 @@ class BlogController extends Controller
         return response()->json($blog);
     }
 
-    public function store(StoreBlogRequest $request, StoreBlogAction $action): JsonResponse
-    {
-        $blog = $action->execute($request->validated());
+   public function store(StoreBlogRequest $request, StoreBlogAction $action): JsonResponse
+{
+    $data = $request->isBulk()
+        ? $request->json()->all()
+        : $request->validated();
 
-        return response()->json($blog, 201);
-    }
+    $result = $action->execute($data);
+
+    return response()->json($result, 201);
+}
 
     public function update(UpdateBlogRequest $request, Blog $blog, UpdateBlogAction $action): JsonResponse
     {
