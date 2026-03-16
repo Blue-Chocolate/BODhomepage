@@ -31,6 +31,18 @@ class BlogRepository
     {
         return Blog::create($data);
     }
+    public function createBulk(array $data): array
+{
+    // Insert all at once in one query
+    Blog::insert($data);
+
+    // Return the inserted records
+    return Blog::with('category')
+        ->latest()
+        ->take(count($data))
+        ->get()
+        ->toArray();
+}
 
     public function update(Blog $blog, array $data): Blog
     {
