@@ -7,6 +7,9 @@ use Orion\Facades\Orion;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BlogCateogryController;
 
+
+Route::apiResource('blogs', BlogController::class);
+
 Orion::resource('blogs', BlogController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
 Orion::resource('blog-categories', BlogCateogryController::class)->only(['index', 'show']);
 Orion::resource('business-library', \App\Http\Controllers\BusinessLibraryController::class)->only(['index', 'show']);
