@@ -10,6 +10,7 @@ use App\Http\Requests\Blog\UpdateBlogRequest;
 use App\Models\Blog;
 use App\Repositories\BlogRepository\BlogRepository;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class BlogController extends Controller
 {
@@ -17,9 +18,12 @@ class BlogController extends Controller
         private readonly BlogRepository $repository
     ) {}
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $blogs = $this->repository->getAll();
+        $perPage = (int) $request->query('per_page', 15);
+        $page    = (int) $request->query('page', 1);
+
+        $blogs = $this->repository->getAll($perPage, $page);
 
         return response()->json($blogs);
     }
@@ -31,16 +35,16 @@ class BlogController extends Controller
         return response()->json($blog);
     }
 
-   public function store(StoreBlogRequest $request, StoreBlogAction $action): JsonResponse
-{
-    $data = $request->isBulk()
-        ? $request->json()->all()
-        : $request->validated();
+    public function store(StoreBlogRequest $request, StoreBlogAction $action): JsonResponse
+    {
+        $data = $request->isBulk()
+            ? $request->json()->all()
+            : $request->validated();
 
-    $result = $action->execute($data);
+        $result = $action->execute($data);
 
-    return response()->json($result, 201);
-}
+        return response()->json($result, 201);
+    }
 
     public function update(UpdateBlogRequest $request, Blog $blog, UpdateBlogAction $action): JsonResponse
     {
@@ -56,3 +60,14 @@ class BlogController extends Controller
         return response()->json(['message' => 'Blog deleted successfully']);
     }
 }
+// ```
+
+// ---
+
+// Now you can control pagination via query params:
+// ```
+// GET /api/blogs                      → page 1, 15 per page (defaults)
+// GET /api/blogs?per_page=30          → page 1, 30 per page
+// GET /api/blogs?page=2               → page 2, 15 per page
+// GET /api/blogs?per_page=50&page=3   → page 3, 50 per page
+// GET /api/blogs?per_page=200         → capped at 100 per page

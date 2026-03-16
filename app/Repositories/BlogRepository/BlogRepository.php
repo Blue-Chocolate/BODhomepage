@@ -7,11 +7,14 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class BlogRepository
 {
-    public function getAll(int $perPage = 15): LengthAwarePaginator
+    public function getAll(int $perPage = 15, int $page = 1): LengthAwarePaginator
     {
         return Blog::with('category')
             ->latest()
-            ->paginate($perPage);
+            ->paginate(
+                perPage: min($perPage, 100), // max 100 per page
+                page: $page
+            );
     }
 
     public function findById(int $id): ?Blog
