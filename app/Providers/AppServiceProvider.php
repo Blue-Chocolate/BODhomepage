@@ -25,11 +25,18 @@ class AppServiceProvider extends ServiceProvider
             return request()->query('secret') === env('SCRAMBLE_SECRET');
         });
 
-        // Tell Scramble JWT is a Bearer token auth
         Scramble::afterOpenApiGenerated(function (OpenApi $openApi) {
+            // Register bearer token as available scheme
             $openApi->secure(
                 SecurityScheme::http('bearer', 'JWT')
             );
+
+            // Remove security requirement from every operation
+            foreach ($openApi->paths as $path) {
+                foreach ($path->operations as $operation) {
+                    $operation->security = [];
+                }
+            }
         });
     }
 }
