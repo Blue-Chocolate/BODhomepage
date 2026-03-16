@@ -7,7 +7,7 @@ use Orion\Facades\Orion;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BlogCateogryController;
 
-Orion::resource('blogs', BlogController::class)->only(['index', 'show']);
+Orion::resource('blogs', BlogController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
 Orion::resource('blog-categories', BlogCateogryController::class)->only(['index', 'show']);
 Orion::resource('business-library', \App\Http\Controllers\BusinessLibraryController::class)->only(['index', 'show']);
 Orion::resource('business-library-categories', \App\Http\Controllers\BusinessLibraryCategoryController::class)->only(['index', 'show']);
