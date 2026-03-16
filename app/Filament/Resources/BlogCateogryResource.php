@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\BlogCateogryResource\Pages;
-use App\Models\BlogCateogry;
+use App\Models\BlogCategory;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 
 class BlogCateogryResource extends Resource
 {
-    protected static ?string $model = BlogCateogry::class;
+    protected static ?string $model = BlogCategory::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
 
@@ -61,7 +61,7 @@ class BlogCateogryResource extends Resource
                             ->label('Slug')
                             ->required()
                             ->maxLength(255)
-                            ->unique(BlogCateogry::class, 'slug', ignoreRecord: true)
+                            ->unique(BlogCategory::class, 'slug', ignoreRecord: true)
                             ->rules(['alpha_dash'])
                             ->placeholder('auto-generated-from-name')
                             ->helperText('Must be unique. Only letters, numbers, dashes, and underscores.')
