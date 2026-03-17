@@ -14,7 +14,7 @@ class Blog extends Model
         'content',
         'author',
         'blog_category_id',
-        'image_path',
+        'image_url',
         'published_at',
         'is_published',
     ];

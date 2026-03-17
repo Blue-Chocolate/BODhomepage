@@ -50,7 +50,7 @@ class AppServiceProvider extends ServiceProvider
                                             'content'           => ['type' => 'string', 'example' => 'Full content here'],
                                             'author'            => ['type' => 'string', 'example' => 'John Doe'],
                                             'blog_category_id'  => ['type' => 'integer', 'example' => 1],
-                                            'image_path'        => ['type' => 'string', 'nullable' => true, 'example' => 'uploads/img.jpg'],
+                                            'image_url'        => ['type' => 'string', 'nullable' => true, 'example' => 'uploads/img.jpg'],
                                             'published_at'      => ['type' => 'string', 'nullable' => true, 'example' => '2026-01-01 00:00:00'],
                                             'is_published'      => ['type' => 'boolean', 'nullable' => true, 'example' => false],
                                         ],

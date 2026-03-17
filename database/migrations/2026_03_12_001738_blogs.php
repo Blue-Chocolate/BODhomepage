@@ -16,7 +16,7 @@ return new class extends Migration
             $table->text('content');
             $table->string('author');
             $table->foreignId('blog_category_id')->constrained('blog_categories')->onDelete('cascade');
-            $table->string('image_path')->nullable();
+            $table->string('image_url')->nullable();
             $table->dateTime('published_at')->nullable();
             $table->boolean('is_published')->default(false);
             $table->timestamps();

@@ -22,7 +22,7 @@ class StoreBlogRequest extends FormRequest
                 '*.content'           => ['required', 'string'],
                 '*.author'            => ['required', 'string', 'max:255'],
                 '*.blog_category_id'  => ['required', 'integer'],
-                '*.image_path'        => ['nullable', 'string'],
+                '*.image_url'        => ['nullable', 'string'],
                 '*.published_at'      => ['nullable', 'date'],
                 '*.is_published'      => ['nullable', 'boolean'],
             ];
