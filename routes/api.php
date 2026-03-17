@@ -21,3 +21,8 @@ Orion::resource('digital-solution-types', \App\Http\Controllers\DigitalSolutionT
 use App\Http\Controllers\ContactUsController;
 
 Route::apiResource('contact-us', ContactUsController::class);
+
+use App\Http\Controllers\PartnerController;
+
+Route::get('partners', [PartnerController::class, 'index']);
+Route::get('partners/{id}', [PartnerController::class, 'show']);
