@@ -37,7 +37,7 @@ private function createBulk(array $data): array
             'content'           => $item['content'],
             'author'            => $item['author'],
             'blog_category_id'  => $item['blog_category_id'],
-            'image_path'        => $item['image_path'] ?? null,
+            'image_url'        => $item['image_path'] ?? null,
             'published_at'      => $item['published_at'] ?? null,
             'is_published'      => $item['is_published'] ?? false,
             'created_at'        => $now,

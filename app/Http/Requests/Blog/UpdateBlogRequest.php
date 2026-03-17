@@ -23,7 +23,7 @@ class UpdateBlogRequest extends FormRequest
             'content'           => ['sometimes', 'string'],
             'author'            => ['sometimes', 'string', 'max:255'],
             'blog_category_id'  => ['sometimes', 'integer', 'exists:blog_categories,id'],
-            'image_path'        => ['nullable', 'string'],
+            'image_url'        => ['nullable', 'string'],
             'published_at'      => ['nullable', 'date'],
             'is_published'      => ['nullable', 'boolean'],
         ];
