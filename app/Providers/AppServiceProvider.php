@@ -7,13 +7,15 @@ use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
-
+use App\Models\ContactUs;
+use App\Observers\ContactUsObserver;
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void {}
 
     public function boot(): void
     {
+         ContactUs::observe(ContactUsObserver::class);
         Scramble::ignoreDefaultRoutes();
         Scramble::registerUiRoute('docs/api');
         Scramble::registerJsonSpecificationRoute('docs/api.json');

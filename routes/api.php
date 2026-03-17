@@ -17,3 +17,7 @@ Orion::resource('business-library-categories', \App\Http\Controllers\BusinessLib
 Orion::resource('case-studies', \App\Http\Controllers\CaseStudyController::class)->only(['index', 'show']);
 Orion::resource('digital-solutions', \App\Http\Controllers\DigitalSolutionController::class)->only(['index', 'show']);
 Orion::resource('digital-solution-types', \App\Http\Controllers\DigitalSolutionTypeController::class)->only(['index', 'show']);
+
+use App\Http\Controllers\ContactUsController;
+
+Route::apiResource('contact-us', ContactUsController::class);
