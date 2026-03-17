@@ -22,7 +22,7 @@ class StoreBlogRequest extends FormRequest
                 '*.content'           => ['required', 'string'],
                 '*.author'            => ['required', 'string', 'max:255'],
                 '*.blog_category_id'  => ['required', 'integer'],
-                '*.image_url'        => ['nullable', 'string'],
+                '*.image_path' => ['nullable', 'string'],
                 '*.published_at'      => ['nullable', 'date'],
                 '*.is_published'      => ['nullable', 'boolean'],
             ];
@@ -35,7 +35,8 @@ class StoreBlogRequest extends FormRequest
             'content'           => ['required', 'string'],
             'author'            => ['required', 'string', 'max:255'],
             'blog_category_id'  => ['required', 'integer', 'exists:blog_categories,id'],
-            'image_url'        => ['nullable', 'string'],
+           'image_path' => ['nullable', 'string'],
+
             'published_at'      => ['nullable', 'date'],
             'is_published'      => ['nullable', 'boolean'],
         ];
@@ -75,6 +76,26 @@ class StoreBlogRequest extends FormRequest
             }
         });
     }
+    protected function prepareForValidation(): void
+{
+    if ($this->isBulk()) {
+        $items = collect($this->json()->all())->map(function ($item) {
+            if (isset($item['image_url'])) {
+                $item['image_path'] = $item['image_url'];
+                unset($item['image_url']);
+            }
+            return $item;
+        })->toArray();
+
+        $this->replace($items);
+    } else {
+        if ($this->has('image_url')) {
+            $this->merge([
+                'image_path' => $this->input('image_url'),
+            ]);
+        }
+    }
+}
 
     public function isBulk(): bool
     {
