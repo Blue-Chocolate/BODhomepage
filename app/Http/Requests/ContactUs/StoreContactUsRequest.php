@@ -3,6 +3,7 @@
 namespace App\Http\Requests\ContactUs;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreContactUsRequest extends FormRequest
 {
@@ -16,8 +17,8 @@ class StoreContactUsRequest extends FormRequest
         return [
             'name'    => ['required', 'string', 'max:255'],
             'phone'   => ['nullable', 'string', 'max:20'],
-            'email'   => ['required', 'email', 'max:255'],
-            'subject' => ['required', 'string', 'max:255'],
+            'email'   => ['nullable', 'email', 'max:255'],
+            'subject' => ['required', Rule::in(['General Inquiry', 'Support', 'Feedback', 'Other'])],
             'message' => ['required', 'string'],
             'reply'   => ['nullable', 'string'],
         ];

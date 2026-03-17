@@ -15,6 +15,7 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Forms\Components\Select;
 
 class ContactUsResource extends Resource
 {
@@ -44,11 +45,16 @@ class ContactUsResource extends Resource
                 ->required()
                 ->maxLength(255),
 
-            TextInput::make('subject')
-                ->label('الموضوع')
-                ->required()
-                ->maxLength(255)
-                ->columnSpanFull(),
+            Select::make('subject')
+    ->label('الموضوع')
+    ->options([
+        'General Inquiry' => 'استفسار عام',
+        'Support'         => 'دعم فني',
+        'Feedback'        => 'ملاحظات',
+        'Other'           => 'أخرى',
+    ])
+    ->required()
+    ->default('General Inquiry'),
 
             Textarea::make('message')
                 ->label('الرسالة')
