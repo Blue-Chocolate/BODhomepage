@@ -26,3 +26,11 @@ use App\Http\Controllers\PartnerController;
 
 Route::get('partners', [PartnerController::class, 'index']);
 Route::get('partners/{id}', [PartnerController::class, 'show']);
+
+use App\Http\Controllers\Api\HeaderController;
+
+Route::prefix('header')->group(function () {
+    Route::get('/',        [HeaderController::class, 'index']);    // GET /api/header
+    Route::get('/settings',[HeaderController::class, 'settings']); // GET /api/header/settings
+    Route::get('/nav',     [HeaderController::class, 'nav']);      // GET /api/header/nav
+});
