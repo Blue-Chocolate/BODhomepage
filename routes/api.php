@@ -34,3 +34,18 @@ Route::prefix('header')->group(function () {
     Route::get('/settings',[HeaderController::class, 'settings']); // GET /api/header/settings
     Route::get('/nav',     [HeaderController::class, 'nav']);      // GET /api/header/nav
 });
+
+// routes/api.php
+use App\Http\Controllers\Api\WhoAreWeController;
+use App\Http\Controllers\Api\ServicesController;
+use App\Http\Controllers\Api\TestimonialsController;
+
+// 4.3 من نحن
+Route::get('/who-are-we', [WhoAreWeController::class, 'index']);
+
+// 4.4 الخدمات
+Route::get('/services',       [ServicesController::class, 'index']);
+Route::get('/services/{service}', [ServicesController::class, 'show']);
+
+// 4.6 الشهادات وقصص النجاح
+Route::get('/testimonials', [TestimonialsController::class, 'index']);
