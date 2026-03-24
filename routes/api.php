@@ -49,3 +49,13 @@ Route::get('/services/{service}', [ServicesController::class, 'show']);
 
 // 4.6 الشهادات وقصص النجاح
 Route::get('/testimonials', [TestimonialsController::class, 'index']);
+
+
+// routes/api.php
+use App\Http\Controllers\Api\NewsController;
+
+Route::prefix('news')->group(function () {
+    Route::get('/',            [NewsController::class, 'index']);      // GET /api/news
+    Route::get('/categories',  [NewsController::class, 'categories']); // GET /api/news/categories
+    Route::get('/{slug}',      [NewsController::class, 'show']);       // GET /api/news/{slug}
+});
