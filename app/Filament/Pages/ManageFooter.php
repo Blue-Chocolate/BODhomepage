@@ -14,7 +14,7 @@ class ManageFooter extends Page
 {
     protected static ?string $navigationIcon  = 'heroicon-o-document-text';
     protected static ?string $navigationLabel = 'إعدادات الفوتر';
-    protected static ?string $navigationGroup = 'الموقع';
+    protected static ?string $navigationGroup = 'Footer';
     protected static string  $view            = 'filament.pages.manage-footer';
 
     public ?array $data = [];

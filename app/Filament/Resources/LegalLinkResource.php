@@ -18,6 +18,7 @@ class LegalLinkResource extends Resource
     protected static ?string $model = LegalLink::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationGroup = 'Footer';
 
     // app/Filament/Resources/LegalLinkResource.php
 public static function form(Form $form): Form

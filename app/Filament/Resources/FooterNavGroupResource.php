@@ -17,7 +17,7 @@ class FooterNavGroupResource extends Resource
     protected static ?string $model           = FooterNavGroup::class;
     protected static ?string $navigationIcon  = 'heroicon-o-bars-3-bottom-right';
     protected static ?string $navigationLabel = 'قائمة الفوتر';
-    protected static ?string $navigationGroup = 'الموقع';
+    protected static ?string $navigationGroup = 'Footer';
     protected static ?string $modelLabel      = 'عمود';
     protected static ?string $pluralModelLabel = 'أعمدة الفوتر';
 
