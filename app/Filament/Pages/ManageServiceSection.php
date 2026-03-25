@@ -22,7 +22,7 @@ class ManageServiceSection extends Page implements HasTable
 
     protected static ?string $navigationIcon  = 'heroicon-o-briefcase';
     protected static ?string $navigationLabel = 'قسم الخدمات';
-    protected static ?string $navigationGroup = 'الموقع';
+    protected static ?string $navigationGroup = 'الخدمات';
     protected static string  $view            = 'filament.pages.manage-service-section';
 
     public ?array $data = [];
