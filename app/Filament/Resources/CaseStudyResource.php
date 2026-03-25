@@ -41,21 +41,17 @@ class CaseStudyResource extends Resource
                         ->unique(ignoreRecord: true)
                         ->maxLength(255),
 
-                    Forms\Components\Select::make('status')
-                        ->label('الحالة')
-                        ->options([
-                            'publish' => 'منشور',
-                            'draft'   => 'مسودة',
-                            'private' => 'خاص',
-                        ])
-                        ->default('publish')
-                        ->required()
-                        ->badge()
-                        ->color(fn (string $state): string => match ($state) {
-                            'publish' => 'success',
-                            'draft'   => 'warning',
-                            'private' => 'gray',
-                        }),
+                  // Find this in your form() method and remove ->badge() and ->color()
+Forms\Components\Select::make('status')
+    ->label('الحالة')
+    ->options([
+        'publish' => 'منشور',
+        'draft'   => 'مسودة',
+        'private' => 'خاص',
+    ])
+    ->default('publish')
+    ->required()
+    ->native(false),  // ✅ this is all you need
 
                     Forms\Components\DateTimePicker::make('published_at')
                         ->label('تاريخ النشر'),
