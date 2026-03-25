@@ -1,4 +1,5 @@
 <?php
+// app/Filament/Resources/CaseStudyResource/Pages/ListCaseStudies.php
 
 namespace App\Filament\Resources\CaseStudyResource\Pages;
 
@@ -13,7 +14,7 @@ class ListCaseStudies extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()->label('إضافة دراسة حالة'),
         ];
     }
 }

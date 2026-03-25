@@ -11,21 +11,33 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cases_studies', function (Blueprint $table){
+     Schema::create('case_studies', function (Blueprint $table) {
             $table->id();
+            $table->unsignedInteger('post_id')->unique()->nullable();
             $table->string('title');
-            $table->string('author')->nullable();
-            $table->string('description')->nullable();
-            $table->dateTime('published_at')->nullable();
-            $table->string('image_path')->nullable();
+            $table->string('slug')->unique();
+            $table->text('excerpt')->nullable();
+            $table->longText('content_text')->nullable();
+            $table->string('status')->default('publish');
+            $table->string('link')->nullable();
+            $table->string('image_url')->nullable();
+            $table->string('image_drive_file_id')->nullable();
+            $table->string('image_drive_link')->nullable();
+            $table->string('image_file_name')->nullable();
+            $table->string('image_upload_status')->nullable();
+            $table->unsignedBigInteger('author_id')->nullable();
+            $table->string('author_name')->nullable();
+            $table->unsignedInteger('category_id')->nullable();
+            $table->string('tags')->nullable();
+            $table->string('reading_time')->nullable();
+            $table->timestamp('published_at')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('case_studies');
     }
 };

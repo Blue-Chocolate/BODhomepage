@@ -1,4 +1,5 @@
 <?php
+// app/Filament/Resources/CaseStudyResource/Pages/EditCaseStudy.php
 
 namespace App\Filament\Resources\CaseStudyResource\Pages;
 
@@ -13,7 +14,14 @@ class EditCaseStudy extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()->label('حذف'),
+            Actions\ForceDeleteAction::make()->label('حذف نهائي'),
+            Actions\RestoreAction::make()->label('استعادة'),
         ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

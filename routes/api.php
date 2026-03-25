@@ -14,7 +14,6 @@ Orion::resource('blogs', BlogController::class)->only(['index', 'show', 'store',
 Orion::resource('blog-categories', BlogCateogryController::class)->only(['index', 'show']);
 Orion::resource('business-library', \App\Http\Controllers\BusinessLibraryController::class)->only(['index', 'show']);
 Orion::resource('business-library-categories', \App\Http\Controllers\BusinessLibraryCategoryController::class)->only(['index', 'show']);
-Orion::resource('case-studies', \App\Http\Controllers\CaseStudyController::class)->only(['index', 'show']);
 Orion::resource('digital-solutions', \App\Http\Controllers\DigitalSolutionController::class)->only(['index', 'show']);
 Orion::resource('digital-solution-types', \App\Http\Controllers\DigitalSolutionTypeController::class)->only(['index', 'show']);
 
@@ -64,3 +63,15 @@ Route::prefix('news')->group(function () {
 use App\Http\Controllers\Api\FooterController;
 
 Route::get('/footer', [FooterController::class, 'index']);
+
+// routes/api.php
+
+use App\Http\Controllers\Api\CaseStudyController;
+
+Route::prefix('case-studies')->group(function () {
+    Route::get('/', [CaseStudyController::class, 'index']);
+    Route::get('/{id}', [CaseStudyController::class, 'show']);
+    Route::post('/', [CaseStudyController::class, 'store']);
+    Route::put('/{caseStudy}', [CaseStudyController::class, 'update']);
+    Route::delete('/{caseStudy}', [CaseStudyController::class, 'destroy']);
+});
