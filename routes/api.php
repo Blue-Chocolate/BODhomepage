@@ -59,3 +59,8 @@ Route::prefix('news')->group(function () {
     Route::get('/categories',  [NewsController::class, 'categories']); // GET /api/news/categories
     Route::get('/{slug}',      [NewsController::class, 'show']);       // GET /api/news/{slug}
 });
+
+// routes/api.php
+use App\Http\Controllers\Api\FooterController;
+
+Route::get('/footer', [FooterController::class, 'index']);
