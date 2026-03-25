@@ -147,21 +147,21 @@ class CaseStudyResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->limit(40),
-
-                Tables\Columns\BadgeColumn::make('status')
-                    ->label('الحالة')
-                    ->formatStateUsing(fn ($state) => match ($state) {
-                        'publish' => 'منشور',
-                        'draft'   => 'مسودة',
-                        'private' => 'خاص',
-                        default   => $state,
-                    })
-                    ->color(fn ($state) => match ($state) {
-                        'publish' => 'success',
-                        'draft'   => 'warning',
-                        'private' => 'gray',
-                        default   => 'secondary',
-                    }),
+Tables\Columns\TextColumn::make('status')
+    ->label('الحالة')
+    ->badge()
+    ->formatStateUsing(fn ($state) => match ($state) {
+        'publish' => 'منشور',
+        'draft'   => 'مسودة',
+        'private' => 'خاص',
+        default   => $state,
+    })
+    ->color(fn ($state) => match ($state) {
+        'publish' => 'success',
+        'draft'   => 'warning',
+        'private' => 'gray',
+        default   => 'secondary',
+    }),
 
                 Tables\Columns\TextColumn::make('author_name')
                     ->label('الكاتب')
