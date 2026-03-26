@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         UserSeeder::class,
                 NewsSeeder::class,
         CaseStudySeeder::class,
+        ReleaseSeeder::class,
 
         
     ]);

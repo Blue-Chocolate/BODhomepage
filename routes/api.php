@@ -71,7 +71,9 @@ use App\Http\Controllers\Api\CaseStudyController;
 Route::prefix('case-studies')->group(function () {
     Route::get('/', [CaseStudyController::class, 'index']);
     Route::get('/{id}', [CaseStudyController::class, 'show']);
-    Route::post('/', [CaseStudyController::class, 'store']);
-    Route::put('/{caseStudy}', [CaseStudyController::class, 'update']);
-    Route::delete('/{caseStudy}', [CaseStudyController::class, 'destroy']);
+
 });
+
+use App\Http\Controllers\Api\ReleaseController;
+
+ Route::apiResource('releases', ReleaseController::class);
