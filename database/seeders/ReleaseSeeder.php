@@ -10,7 +10,7 @@ class ReleaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $jsonPath = database_path('data/releases.json');
+        $jsonPath = database_path('seeders/data/releases.json');
 
         if (! File::exists($jsonPath)) {
             $this->command->warn("releases.json not found at: {$jsonPath}");
