@@ -6,7 +6,8 @@ use Orion\Facades\Orion;
 
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BlogCateogryController;
-
+use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Middleware\CheckApprovedOrganization;
 
 Route::apiResource('blogs', BlogController::class);
 
@@ -77,3 +78,27 @@ Route::prefix('case-studies')->group(function () {
 use App\Http\Controllers\Api\ReleaseController;
 
  Route::apiResource('releases', ReleaseController::class);
+
+ Route::prefix('auth')->group(function () {
+
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login',    [AuthController::class, 'login']);
+
+});
+
+// ── Authenticated Routes ──────────────────────────────────────────────────────
+Route::middleware(['auth:sanctum'])->group(function () {
+
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+
+    // ── Approved Organization Routes ──────────────────────────────────────────
+    Route::middleware([CheckApprovedOrganization::class])->group(function () {
+
+        // All routes here require an authenticated user
+        // whose linked organization has approval_status = 'approved'
+
+        // Route::get('/dashboard', ...);
+        // Route::apiResource('/projects', ProjectController::class);
+
+    });
+});
