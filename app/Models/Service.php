@@ -10,16 +10,26 @@ class Service extends Model
     protected $fillable = [
         'title', 'title_en',
         'description', 'description_en',
-        'icon', 'image_path',
-        'cta_text', 'cta_text_en', 'cta_url',
         'sort_order', 'is_active',
+        // keep icon/image/cta if still needed, remove if not
     ];
 
     protected $casts = ['is_active' => 'boolean'];
 
+    public function subServices()
+    {
+        return $this->hasMany(SubService::class)->orderBy('sort_order');
+    }
+
+    public function activeSubServices()
+    {
+        return $this->subServices()->where('is_active', true);
+    }
+
     public static function getActive()
     {
-        return static::where('is_active', true)
+        return static::with('activeSubServices')
+                     ->where('is_active', true)
                      ->orderBy('sort_order')
                      ->get();
     }

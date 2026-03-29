@@ -64,39 +64,25 @@ class ManageServiceSection extends Page implements HasTable
             ->query(Service::query())
             ->heading('بطاقات الخدمات')
             ->description('إدارة الخدمات المعروضة — اسحب لإعادة الترتيب')
-            ->columns([
-                Tables\Columns\ImageColumn::make('image_path')
-                    ->label('صورة')
-                    ->defaultImageUrl(fn($record) => null)
-                    ->circular(false)
-                    ->width(60)
-                    ->height(40),
+           ->columns([
+    Tables\Columns\TextColumn::make('sort_order')
+        ->label('#')->sortable()->width(50),
 
-                Tables\Columns\TextColumn::make('sort_order')
-                    ->label('#')
-                    ->sortable()
-                    ->width(50),
+    Tables\Columns\TextColumn::make('title')
+        ->label('الخدمة')->searchable()->weight('bold'),
 
-                Tables\Columns\TextColumn::make('title')
-                    ->label('الخدمة')
-                    ->searchable()
-                    ->weight('bold'),
+    Tables\Columns\TextColumn::make('title_en')
+        ->label('إنجليزي')->color('gray'),
 
-                Tables\Columns\TextColumn::make('title_en')
-                    ->label('إنجليزي')
-                    ->searchable()
-                    ->color('gray'),
+    Tables\Columns\TextColumn::make('sub_services_count')
+        ->label('الخدمات الفرعية')
+        ->counts('subServices')
+        ->badge()
+        ->color('info'),
 
-                Tables\Columns\TextColumn::make('cta_url')
-                    ->label('رابط CTA')
-                    ->limit(35)
-                    ->url(fn($record) => $record->cta_url)
-                    ->openUrlInNewTab(),
-
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label('مفعّل')
-                    ->boolean(),
-            ])
+    Tables\Columns\IconColumn::make('is_active')
+        ->label('مفعّل')->boolean(),
+])
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
             ->headerActions([
@@ -153,59 +139,75 @@ class ManageServiceSection extends Page implements HasTable
     }
 
     // فورم الخدمة مشترك بين Create و Edit
-    private function getServiceForm(): array
-    {
-        return [
-            Forms\Components\Section::make('بيانات الخدمة')->schema([
-                Forms\Components\TextInput::make('title')
-                    ->label('العنوان عربي')
-                    ->required(),
+   private function getServiceForm(): array
+{
+    return [
+        Forms\Components\Section::make('بيانات الخدمة')->schema([
+            Forms\Components\TextInput::make('title')
+                ->label('اسم الخدمة عربي')
+                ->required(),
 
-                Forms\Components\TextInput::make('title_en')
-                    ->label('العنوان إنجليزي'),
+            Forms\Components\TextInput::make('title_en')
+                ->label('اسم الخدمة إنجليزي'),
 
-                Forms\Components\Textarea::make('description')
-                    ->label('الوصف عربي')
-                    ->rows(3),
+            Forms\Components\Textarea::make('description')
+                ->label('وصف مختصر عربي')
+                ->rows(2),
 
-                Forms\Components\Textarea::make('description_en')
-                    ->label('الوصف إنجليزي')
-                    ->rows(3),
+            Forms\Components\Textarea::make('description_en')
+                ->label('وصف مختصر إنجليزي')
+                ->rows(2),
+        ])->columns(2),
 
-                Forms\Components\TextInput::make('icon')
-                    ->label('الأيقونة')
-                    ->placeholder('heroicon-o-star')
-                    ->helperText('اسم Heroicon أو أي class'),
+        Forms\Components\Section::make('الخدمات الفرعية')->schema([
+            Forms\Components\Repeater::make('subServices')
+                ->relationship('subServices')
+                ->label('')
+                ->schema([
+                    Forms\Components\TextInput::make('name')
+                        ->label('الاسم عربي')
+                        ->required(),
 
-                Forms\Components\FileUpload::make('image_path')
-                    ->label('صورة الخدمة')
-                    ->image()
-                    ->directory('services')
-                    ->columnSpanFull(),
-            ])->columns(2),
+                    Forms\Components\TextInput::make('name_en')
+                        ->label('الاسم إنجليزي'),
 
-            Forms\Components\Section::make('زر CTA')->schema([
-                Forms\Components\TextInput::make('cta_text')
-                    ->label('نص الزر عربي'),
+                    Forms\Components\Textarea::make('description')
+                        ->label('الوصف عربي')
+                        ->rows(2),
 
-                Forms\Components\TextInput::make('cta_text_en')
-                    ->label('نص الزر إنجليزي'),
+                    Forms\Components\Textarea::make('description_en')
+                        ->label('الوصف إنجليزي')
+                        ->rows(2),
 
-                Forms\Components\TextInput::make('cta_url')
-                    ->label('رابط الزر')
-                    ->url(),
-            ])->columns(3),
+                    Forms\Components\TextInput::make('sort_order')
+                        ->label('الترتيب')
+                        ->numeric()
+                        ->default(0)
+                        ->columnSpan(1),
 
-            Forms\Components\Section::make('الإعدادات')->schema([
-                Forms\Components\TextInput::make('sort_order')
-                    ->label('الترتيب')
-                    ->numeric()
-                    ->default(0),
+                    Forms\Components\Toggle::make('is_active')
+                        ->label('مفعّل')
+                        ->default(true)
+                        ->columnSpan(1),
+                ])
+                ->columns(2)
+                ->orderColumn('sort_order')
+                ->reorderable()
+                ->collapsible()
+                ->itemLabel(fn(array $state) => $state['name'] ?? 'خدمة فرعية جديدة')
+                ->addActionLabel('إضافة خدمة فرعية'),
+        ]),
 
-                Forms\Components\Toggle::make('is_active')
-                    ->label('مفعّل')
-                    ->default(true),
-            ])->columns(2),
-        ];
-    }
+        Forms\Components\Section::make('الإعدادات')->schema([
+            Forms\Components\TextInput::make('sort_order')
+                ->label('الترتيب')
+                ->numeric()
+                ->default(0),
+
+            Forms\Components\Toggle::make('is_active')
+                ->label('مفعّل')
+                ->default(true),
+        ])->columns(2),
+    ];
+}
 }
