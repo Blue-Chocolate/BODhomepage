@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Support\Facades\File;
 use App\Models\ProceduralEvidence;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 class ProceduralEvidenceSeeder extends Seeder
 {
     public function run(): void

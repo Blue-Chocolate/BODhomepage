@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ProceduralEvidence extends Model
 {
     use HasFactory;
-
+    protected $table = 'procedural_evidences';
     protected $fillable = [
         'row_number',
         'post_id',
