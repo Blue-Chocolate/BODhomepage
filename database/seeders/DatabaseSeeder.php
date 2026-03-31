@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         CaseStudySeeder::class,
         ReleaseSeeder::class,
         StrategicPlanSeeder::class,
+        ProceduralEvidenceSeeder::class,
 
         
     ]);
