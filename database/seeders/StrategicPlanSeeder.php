@@ -12,7 +12,7 @@ class StrategicPlanSeeder extends Seeder
 {
     public function run(): void
     {
-        $path = database_path('data/strategic_plans.json');
+        $path = database_path('seeders/data/strategic_plans.json');
 
         if (! File::exists($path)) {
             $this->command->warn("Data file not found: {$path}");
