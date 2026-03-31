@@ -108,3 +108,12 @@ Route::prefix('strategic-plans')->group(function () {
     Route::get('/', [StrategicPlanController::class, 'index']);
     Route::get('{slug}', [StrategicPlanController::class, 'show']);
 });
+use App\Http\Controllers\Api\ProceduralEvidenceController;
+
+Route::prefix('procedural-evidences')->group(function () {
+    Route::get('/', [ProceduralEvidenceController::class, 'index']);
+    Route::get('/{id}', [ProceduralEvidenceController::class, 'show']);
+    Route::post('/', [ProceduralEvidenceController::class, 'store']);
+    Route::put('/{id}', [ProceduralEvidenceController::class, 'update']);
+    Route::delete('/{id}', [ProceduralEvidenceController::class, 'destroy']);
+});

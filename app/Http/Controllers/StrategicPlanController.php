@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\StrategicPlan;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\In;
 
 class StrategicPlanController extends Controller
 {
@@ -28,10 +29,10 @@ class StrategicPlanController extends Controller
         ]);
     }
 
-    public function show(string $slug): JsonResponse
+    public function show(Int $id): JsonResponse
     {
         $plan = StrategicPlan::published()
-            ->where('slug', $slug)
+            ->where('id', $id)
             ->firstOrFail();
 
         return response()->json(['data' => $plan]);
