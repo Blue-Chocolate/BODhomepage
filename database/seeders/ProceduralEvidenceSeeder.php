@@ -9,7 +9,7 @@ class ProceduralEvidenceSeeder extends Seeder
 {
     public function run(): void
     {
-        $path = database_path('/seeders/data/procedural_evidences.json');
+        $path = database_path('seeders/data/procedural_evidences.json');
 
         if (!File::exists($path)) {
             $this->command->error('JSON file not found');
