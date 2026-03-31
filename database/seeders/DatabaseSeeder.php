@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
                 NewsSeeder::class,
         CaseStudySeeder::class,
         ReleaseSeeder::class,
+        StrategicPlanSeeder::class,
 
         
     ]);

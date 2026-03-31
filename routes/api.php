@@ -102,3 +102,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     });
 });
+use App\Http\Controllers\StrategicPlanController;
+
+Route::prefix('strategic-plans')->group(function () {
+    Route::get('/', [StrategicPlanController::class, 'index']);
+    Route::get('{slug}', [StrategicPlanController::class, 'show']);
+});
