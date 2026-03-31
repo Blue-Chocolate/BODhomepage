@@ -13,7 +13,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('post_id')->unique()->nullable()->comment('Original WP post ID');
             $table->string('title');
-            $table->string('slug')->unique();
+            $table->string('slug');
             $table->text('excerpt')->nullable();
             $table->longText('content_text')->nullable();
             $table->string('status')->default('publish'); // publish | draft | private
