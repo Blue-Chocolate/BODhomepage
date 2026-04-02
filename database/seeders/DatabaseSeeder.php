@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         ReleaseSeeder::class,
         StrategicPlanSeeder::class,
         ProceduralEvidenceSeeder::class,
+        AnnualPlanSeeder::class,
 
         
     ]);
