@@ -12,7 +12,7 @@ class AnnualPlanSeeder extends Seeder
      * Path to the JSON data file.
      * Place your JSON file at: database/data/annual_plans.json
      */
-    protected string $dataPath = 'seeders/data/annual_plans.json';
+    protected string $dataPath = 'database/seeders/data/annual_plans.json';
 
     public function run(): void
     {
