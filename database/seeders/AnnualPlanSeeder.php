@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Modules\AnnualPlans\Models\AnnualPlan;
+use App\Models\AnnualPlan;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
 
