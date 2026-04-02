@@ -17,6 +17,13 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->string('liscense_number');
+            $table->timestamp('evaluation_date')->nullable();
+            $table->integer('evaluation_duration')->nullable();
+            $table->float('evaluation_score')->nullable();
+            $table->string('evaluator_name')->nullable();
+            $table->string('evaluation_team')->nullable();
+            $table->text('evaluation_notes')->nullable();
+            $table->string('representative_name')->nullable();
             $table->enum('approval_status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamp('approved_at')->nullable();
             $table->timestamps();

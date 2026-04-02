@@ -6,9 +6,9 @@ use Orion\Facades\Orion;
 
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BlogCateogryController;
-use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\AuthController\AuthController;
 use App\Http\Middleware\CheckApprovedOrganization;
-
+use App\Http\Controllers\Api\AnnualPlanController;
 Route::apiResource('blogs', BlogController::class);
 
 Orion::resource('blogs', BlogController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
@@ -79,28 +79,16 @@ use App\Http\Controllers\Api\ReleaseController;
 
  Route::apiResource('releases', ReleaseController::class);
 
- Route::prefix('auth')->group(function () {
+use App\Http\Controllers\Api\OrganizationController;
 
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login',    [AuthController::class, 'login']);
-
-});
-
-// ── Authenticated Routes ──────────────────────────────────────────────────────
-Route::middleware(['auth:sanctum'])->group(function () {
-
-    Route::post('/auth/logout', [AuthController::class, 'logout']);
-
-    // ── Approved Organization Routes ──────────────────────────────────────────
-    Route::middleware([CheckApprovedOrganization::class])->group(function () {
-
-        // All routes here require an authenticated user
-        // whose linked organization has approval_status = 'approved'
-
-        // Route::get('/dashboard', ...);
-        // Route::apiResource('/projects', ProjectController::class);
-
-    });
+Route::prefix('organizations')->group(function () {
+    Route::get('/',                         [OrganizationController::class, 'index']);
+    Route::post('/',                        [OrganizationController::class, 'store']);
+    Route::get('/{organization}',           [OrganizationController::class, 'show']);
+    Route::put('/{organization}',           [OrganizationController::class, 'update']);
+    Route::delete('/{organization}',        [OrganizationController::class, 'destroy']);
+    Route::post('/{organization}/approve',  [OrganizationController::class, 'approve']);
+    Route::post('/{organization}/reject',   [OrganizationController::class, 'reject']);
 });
 use App\Http\Controllers\StrategicPlanController;
 
@@ -117,3 +105,5 @@ Route::prefix('procedural-evidences')->group(function () {
     Route::put('/{id}', [ProceduralEvidenceController::class, 'update']);
     Route::delete('/{id}', [ProceduralEvidenceController::class, 'destroy']);
 });
+
+Route::apiResource('annual-plans', AnnualPlanController::class);
