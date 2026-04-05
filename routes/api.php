@@ -109,8 +109,9 @@ Route::prefix('procedural-evidences')->group(function () {
 Route::apiResource('annual-plans', AnnualPlanController::class);
 
 
-use App\Http\Controllers\Api\LegalLinkController;
-Route::prefix('legal-links')->group(function () {
-    Route::get('/', [LegalLinkController::class, 'index']);
-    Route::get('/{legalLink}', [LegalLinkController::class, 'show']);
+use App\Http\Controllers\Api\DigitalSolutionLinkController;
+
+Route::prefix('digital-solution-links')->group(function () {
+    Route::get('/', [DigitalSolutionLinkController::class, 'index']);
+    Route::get('/{digitalSolutionLink}', [DigitalSolutionLinkController::class, 'show']);
 });
