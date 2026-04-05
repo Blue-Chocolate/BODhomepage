@@ -1,16 +1,20 @@
 <?php
 
-// app/Models/LegalLink.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class LegalLink extends Model
-{    
-    
+class DigitalSolutionLink extends Model
+{
+    protected $table = 'digital_solution_links';
+
     protected $fillable = [
-        'label', 'label_en', 'url',
-        'open_in_new_tab', 'sort_order', 'is_active',
+        'label',
+        'label_en',
+        'url',
+        'open_in_new_tab',
+        'sort_order',
+        'is_active',
     ];
 
     protected $casts = [

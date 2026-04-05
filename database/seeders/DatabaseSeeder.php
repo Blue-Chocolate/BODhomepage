@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
         StrategicPlanSeeder::class,
         ProceduralEvidenceSeeder::class,
         AnnualPlanSeeder::class,
+        DigitalSolutionLinkSeeder ::class,
+        
 
         
     ]);

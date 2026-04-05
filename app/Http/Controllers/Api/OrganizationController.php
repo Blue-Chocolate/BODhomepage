@@ -37,9 +37,8 @@ class OrganizationController extends Controller
             'email'                 => 'nullable|email|unique:organizations,email',
             'phone'                 => 'nullable|string|max:20',
             'liscense_number'       => 'required|string|unique:organizations,liscense_number',
-            'evaluation_date'       => 'nullable|date',
             'evaluation_duration'   => 'nullable|integer|min:0',
-            'evaluation_score'      => 'nullable|numeric|min:0|max:100',
+          
             'evaluator_name'        => 'nullable|string|max:255',
             'evaluation_team'       => 'nullable|string|max:255',
             'representative_name'   => 'nullable|string|max:255',
