@@ -19,6 +19,7 @@ class NewsListResource extends JsonResource
         'title'        => $this->title,
         'slug'         => $this->slug,
         'excerpt'      => $this->excerpt,
+        'content'      => $this->content_text,
         'image'        => $this->image,
         'reading_time' => $this->reading_time,
         'published_at' => $this->published_at?->toDateString(),
