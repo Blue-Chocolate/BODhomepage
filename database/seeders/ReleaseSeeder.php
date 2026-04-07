@@ -27,19 +27,35 @@ class ReleaseSeeder extends Seeder
         $inserted = 0;
         foreach ($data as $item) {
             Release::updateOrCreate(
-                ['edition_number' => $item['edition_number'] ?? null, 'row_number' => $item['row_number'] ?? null],
                 [
-                    'file_url'             => $item['file_url'] ?? null,
-                    'direct_download_url'  => $item['direct_download_url'] ?? null,
-                    'button_text'          => $item['button_text'] ?? null,
-                    'title_guess'          => $item['title_guess'] ?? null,
-                    'card_text'            => $item['card_text'] ?? null,
+                    'post_id'    => $item['post_id'] ?? null,
+                    'row_number' => $item['row_number'] ?? null,
+                ],
+                [
+                    'edition_number'       => $item['edition_number'] ?? null,
+                    'date'                 => $item['date'] ?? null,
+                    'modified'             => $item['modified'] ?? null,
+                    'status'               => $item['status'] ?? 'publish',
+                    'link'                 => $item['link'] ?? null,
+                    'title'                => $item['title'] ?? null,
+                    'excerpt'              => $item['excerpt'] ?? null,
+                    'content_text'         => $item['content_text'] ?? null,
+                    'author_id'            => $item['author_id'] ?? null,
+                    'author_name'          => $item['author_name'] ?? null,
                     'image_url'            => $item['image_url'] ?? null,
+                    'image_drive_file_id'  => $item['image_drive_file_id'] ?? null,
+                    'image_drive_link'     => $item['image_drive_link'] ?? null,
+                    'image_file_name'      => $item['image_file_name'] ?? null,
+                    'image_upload_status'  => $item['image_upload_status'] ?? null,
+                    'categories'           => $item['categories'] ?? null,
+                    'tags'                 => $item['tags'] ?? null,
+                    'slug'                 => $item['slug'] ?? null,
+                    'reading_time'         => $item['reading_time'] ?? null,
                 ]
             );
             $inserted++;
         }
 
-        $this->command->info("Seeded {$inserted} release(s) from releases.json.");
+        $this->command->info("✅ Release seeder completed: {$inserted} records processed.");
     }
 }
