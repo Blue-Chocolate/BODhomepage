@@ -28,7 +28,6 @@ return new class extends Migration
     $table->string('image_drive_link')->nullable();
     $table->string('image_file_name')->nullable();
     $table->string('image_upload_status')->nullable();
-    $table->unsignedInteger('categories')->nullable();
     $table->string('tags')->nullable();
     $table->string('slug')->nullable();
     $table->string('reading_time')->nullable();
