@@ -31,23 +31,28 @@ class OrganizationController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $data = $request->validate([
-            'name'                  => 'required|string|max:255',
-            'email'                 => 'nullable|email|unique:organizations,email',
-            'phone'                 => 'nullable|string|max:20',
-            'liscense_number'       => 'required|string|unique:organizations,liscense_number',
-            'evaluation_duration'   => 'nullable|integer|min:0',
-          
-            'evaluator_name'        => 'nullable|string|max:255',
-            'evaluation_team'       => 'nullable|string|max:255',
-            'representative_name'   => 'nullable|string|max:255',
-        ]);
+{
+    $data = $request->validate([
+        'name'                  => 'required|string|max:255',
+        'liscense_number'       => 'required|string|unique:organizations,liscense_number',
+        'evaluation_duration'   => 'nullable|integer|min:0',
+        'type'                  => ['required', Rule::in(['government', 'foundation', 'non_profit'])],
+        'evaluator_name'        => 'nullable|string|max:255',
+        'evaluation_team'       => 'nullable|string|max:255',
+        'representative_name'   => 'nullable|string|max:255',
+    ]);
 
-        $organization = Organization::create($data);
+    $organization = Organization::create($data);
+    
+    // Generate a token for the organization
+    $token = $organization->createToken('auth_token')->plainTextToken;
 
-        return response()->json($organization, 201);
-    }
+    return response()->json([
+        'organization' => $organization,
+        'token' => $token,
+        'token_type' => 'Bearer',
+    ], 201);
+}
 
     public function show(Organization $organization)
     {

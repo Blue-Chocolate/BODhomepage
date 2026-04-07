@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->nullable();
-            $table->string('phone')->nullable();
+            $table->enum('type', ['government', 'foundation', 'non_profit']);
             $table->string('liscense_number');
             $table->timestamp('evaluation_date')->nullable();
             $table->integer('evaluation_duration')->nullable();

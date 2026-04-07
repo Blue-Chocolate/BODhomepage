@@ -13,6 +13,7 @@ class Organization extends Model
         'name',
         'email',
         'phone',
+        'type',
         'liscense_number',
         'evaluation_date',
         'evaluation_duration',
@@ -29,6 +30,7 @@ class Organization extends Model
         'approved_at'     => 'datetime',
         'evaluation_score' => 'float',
         'evaluation_duration' => 'integer',
+        
     ];
 
     public function isPending(): bool
