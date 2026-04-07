@@ -24,28 +24,50 @@ class ReleaseSeeder extends Seeder
             return;
         }
 
-       $inserted = 0;
+        // Handle both single object and array of objects
+        if (isset($data['row_number'])) {
+            // Single object case
+            $data = [$data];
+        }
 
-foreach ($data as $item) {
-    Release::updateOrCreate(
-        [
-            'edition_number' => $item['edition_number'] ?? null,
-            'row_number' => $item['row_number'] ?? null,
-        ],
-        [
-            'file_url' => $item['file_url'] ?? null,
-            'direct_download_url' => $item['direct_download_url'] ?? null,
-            'button_text' => $item['button_text'] ?? null,
-            'title_guess' => $item['title_guess'] ?? null,
-            'card_text' => $item['card_text'] ?? null,
-            'image_url' => $item['image_url'] ?? null,
-        ]
-    );
+        $inserted = 0;
+        $skipped = 0;
 
-    $inserted++;
-}
+        foreach ($data as $item) {
+            // Skip if no edition_number or row_number (required for updateOrCreate)
+            if (empty($item['edition_number']) && empty($item['row_number'])) {
+                $this->command->warn("Skipping item without edition_number or row_number: " . json_encode($item));
+                $skipped++;
+                continue;
+            }
 
+            Release::updateOrCreate(
+                [
+                    'edition_number' => $item['edition_number'] ?? null,
+                    'row_number' => $item['row_number'] ?? null,
+                ],
+                [
+                    'file_url' => $item['file_url'] ?? null,
+                    'direct_download_url' => $item['direct_download_url'] ?? null,
+                    'cover_image_url' => $item['cover_image_url'] ?? null,
+                    'image_drive_link' => $item['image_drive_link'] ?? null,
+                    'image_file_name' => $item['image_file_name'] ?? null,
+                    'image_drive_file_id' => $item['image_drive_file_id'] ?? null,
+                    'button_text' => $item['button_text'] ?? null,
+                    'title_guess' => $item['title_guess'] ?? null,
+                    'excerpt' => $item['excerpt'] ?? null,
+                    'card_text' => $item['card_text'] ?? null,
+                    'image_upload_status' => $item['image_upload_status'] ?? null,
+                    'image_url' => $item['image_url'] ?? null,
+                ]
+            );
+
+            $inserted++;
+        }
 
         $this->command->info("Seeded {$inserted} release(s) from releases.json.");
+        if ($skipped > 0) {
+            $this->command->warn("Skipped {$skipped} item(s) due to missing required fields.");
+        }
     }
 }
