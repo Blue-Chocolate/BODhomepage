@@ -13,15 +13,15 @@ class ReleaseController extends Controller
 {
     /**
      * GET /api/releases
-     * List all releases, ordered by edition_number.
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $releases = Release::ordered()
+        $releases = Release::query()
             ->when($request->search, fn ($q, $s) =>
-                $q->where('title_guess', 'like', "%{$s}%")
-                  ->orWhere('card_text', 'like', "%{$s}%")
+                $q->where('title', 'like', "%{$s}%")
+                  ->orWhere('content_text', 'like', "%{$s}%")
             )
+            ->orderBy('date', 'desc')
             ->paginate($request->integer('per_page', 15));
 
         return ReleaseResource::collection($releases);
@@ -43,12 +43,25 @@ class ReleaseController extends Controller
         $validated = $request->validate([
             'row_number'          => 'nullable|integer',
             'edition_number'      => 'nullable|integer',
-            'file_url'            => 'nullable|url|max:2048',
-            'direct_download_url' => 'nullable|url|max:2048',
-            'button_text'         => 'nullable|string|max:255',
-            'title_guess'         => 'nullable|string|max:500',
-            'card_text'           => 'nullable|string',
+            'post_id'             => 'nullable|integer',
+            'date'                => 'nullable|date',
+            'modified'            => 'nullable|date',
+            'status'              => 'nullable|string|max:50',
+            'link'                => 'nullable|url|max:2048',
+            'title'               => 'nullable|string|max:500',
+            'excerpt'             => 'nullable|string',
+            'content_text'        => 'nullable|string',
+            'author_id'           => 'nullable|integer',
+            'author_name'         => 'nullable|string|max:255',
             'image_url'           => 'nullable|url|max:2048',
+            'image_drive_file_id' => 'nullable|string|max:255',
+            'image_drive_link'    => 'nullable|url|max:2048',
+            'image_file_name'     => 'nullable|string|max:500',
+            'image_upload_status' => 'nullable|string|max:50',
+            'categories'          => 'nullable|string|max:255',
+            'tags'                => 'nullable|string|max:255',
+            'slug'                => 'nullable|string|max:500',
+            'reading_time'        => 'nullable|string|max:100',
         ]);
 
         $release = Release::create($validated);
@@ -66,12 +79,25 @@ class ReleaseController extends Controller
         $validated = $request->validate([
             'row_number'          => 'sometimes|nullable|integer',
             'edition_number'      => 'sometimes|nullable|integer',
-            'file_url'            => 'sometimes|nullable|url|max:2048',
-            'direct_download_url' => 'sometimes|nullable|url|max:2048',
-            'button_text'         => 'sometimes|nullable|string|max:255',
-            'title_guess'         => 'sometimes|nullable|string|max:500',
-            'card_text'           => 'sometimes|nullable|string',
+            'post_id'             => 'sometimes|nullable|integer',
+            'date'                => 'sometimes|nullable|date',
+            'modified'            => 'sometimes|nullable|date',
+            'status'              => 'sometimes|nullable|string|max:50',
+            'link'                => 'sometimes|nullable|url|max:2048',
+            'title'               => 'sometimes|nullable|string|max:500',
+            'excerpt'             => 'sometimes|nullable|string',
+            'content_text'        => 'sometimes|nullable|string',
+            'author_id'           => 'sometimes|nullable|integer',
+            'author_name'         => 'sometimes|nullable|string|max:255',
             'image_url'           => 'sometimes|nullable|url|max:2048',
+            'image_drive_file_id' => 'sometimes|nullable|string|max:255',
+            'image_drive_link'    => 'sometimes|nullable|url|max:2048',
+            'image_file_name'     => 'sometimes|nullable|string|max:500',
+            'image_upload_status' => 'sometimes|nullable|string|max:50',
+            'categories'          => 'sometimes|nullable|string|max:255',
+            'tags'                => 'sometimes|nullable|string|max:255',
+            'slug'                => 'sometimes|nullable|string|max:500',
+            'reading_time'        => 'sometimes|nullable|string|max:100',
         ]);
 
         $release->update($validated);
