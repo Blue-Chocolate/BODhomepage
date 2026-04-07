@@ -11,6 +11,7 @@ class Release extends Model
 
     protected $fillable = [
         'row_number',
+         'edition_number',
         'post_id',
         'date',
         'modified',
@@ -34,6 +35,7 @@ class Release extends Model
 
     protected $casts = [
         'row_number' => 'integer',
+          'edition_number' => 'integer',
         'post_id'    => 'integer',
         'author_id'  => 'integer',
         'categories' => 'integer',

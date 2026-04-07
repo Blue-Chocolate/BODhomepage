@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('releases', function (Blueprint $table) {
     $table->id();
     $table->integer('row_number')->nullable();
+    $table->integer('edition_number')->nullable();
     $table->unsignedBigInteger('post_id')->nullable();
     $table->timestamp('date')->nullable();
     $table->timestamp('modified')->nullable();
