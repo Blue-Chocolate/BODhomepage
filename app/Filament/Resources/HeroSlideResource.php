@@ -279,7 +279,7 @@ class HeroSlideResource extends Resource
                         'warning' => 'both',
                     ])
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'waleda'  => 'والدة حلم',
+                        'waleda'  => 'ولادة حلم',
                         'manzuma' => 'المنظومة',
                         'both'    => 'كلاهما',
                     }),
