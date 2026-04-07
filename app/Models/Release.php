@@ -38,7 +38,6 @@ class Release extends Model
           'edition_number' => 'integer',
         'post_id'    => 'integer',
         'author_id'  => 'integer',
-        'categories' => 'integer',
         'date'       => 'datetime',
         'modified'   => 'datetime',
     ];

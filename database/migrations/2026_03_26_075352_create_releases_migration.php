@@ -14,6 +14,7 @@ return new class extends Migration
     $table->integer('edition_number')->nullable();
     $table->unsignedBigInteger('post_id')->nullable();
     $table->timestamp('date')->nullable();
+    $table->string('categories')->nullable();
     $table->timestamp('modified')->nullable();
     $table->string('status')->default('publish');
     $table->string('link')->nullable();
