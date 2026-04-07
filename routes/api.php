@@ -115,3 +115,34 @@ Route::prefix('digital-solution-links')->group(function () {
     Route::get('/', [DigitalSolutionLinkController::class, 'index']);
     Route::get('/{digitalSolutionLink}', [DigitalSolutionLinkController::class, 'show']);
 });
+
+use App\Http\Controllers\Api\HeroController;
+Route::prefix('hero')->group(function () {
+ 
+    // Full hero data (slides + statistics) for a site
+    // GET /api/hero?site=waleda
+    Route::get('/', [HeroController::class, 'index']);
+ 
+    // Statistics bar only
+    // GET /api/hero/statistics?site=waleda
+    Route::get('/statistics', [HeroController::class, 'statistics']);
+});
+ 
+// ── Protected (Sanctum / admin token) ────────────────────────────────────────
+Route::prefix('hero')->middleware(['auth:sanctum'])->group(function () {
+ 
+    // ── Slides ───────────────────────────────────────────────────────────────
+    Route::get('/slides',                    [HeroController::class, 'slides']);         // paginated list
+    Route::get('/slides/{id}',              [HeroController::class, 'showSlide']);       // single slide
+    Route::post('/slides',                  [HeroController::class, 'storeSlide']);      // create
+    Route::post('/slides/{id}',             [HeroController::class, 'updateSlide']);     // update (POST for multipart)
+    Route::delete('/slides/{id}',           [HeroController::class, 'destroySlide']);    // soft delete
+    Route::patch('/slides/reorder',         [HeroController::class, 'reorderSlides']);   // drag-and-drop order
+    Route::patch('/slides/{id}/toggle',     [HeroController::class, 'toggleSlide']);     // toggle active
+ 
+    // ── Statistics ────────────────────────────────────────────────────────────
+    Route::post('/statistics',              [HeroController::class, 'storeStat']);
+    Route::put('/statistics/{id}',          [HeroController::class, 'updateStat']);
+    Route::delete('/statistics/{id}',       [HeroController::class, 'destroyStat']);
+    Route::patch('/statistics/reorder',     [HeroController::class, 'reorderStats']);
+});
