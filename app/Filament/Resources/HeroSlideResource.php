@@ -61,6 +61,11 @@ class HeroSlideResource extends Resource
                                     ->required()
                                     ->maxLength(255),
                             ]),
+                            Forms\Components\FileUpload::make('logo_url')
+    ->label('Logo')
+    ->image()
+    ->directory('logos')
+    ->nullable(),
                             Grid::make(2)->schema([
                                 Forms\Components\Textarea::make('subtitle_ar')
                                     ->label('النص الفرعي (عربي)')

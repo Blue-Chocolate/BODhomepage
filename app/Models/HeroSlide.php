@@ -15,6 +15,7 @@ class HeroSlide extends Model
         'site',
         'title_ar',
         'title_en',
+        'logo_url',
         'subtitle_ar',
         'subtitle_en',
         'background_image',

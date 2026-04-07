@@ -17,6 +17,7 @@ return new class extends Migration
             // Bilingual content
             $table->string('title_ar');
             $table->string('title_en');
+            $table->string('logo_url')->nullable(); // Optional logo image URL
             $table->text('subtitle_ar')->nullable();
             $table->text('subtitle_en')->nullable();
 

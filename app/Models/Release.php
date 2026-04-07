@@ -11,39 +11,12 @@ class Release extends Model
 
     protected $fillable = [
         'row_number',
-         'edition_number',
-        'post_id',
-        'date',
-        'modified',
-        'status',
-        'link',
-        'title',
-        'excerpt',
-        'content_text',
-        'author_id',
-        'author_name',
+        'edition_number',
+        'file_url',
+        'direct_download_url',
+        'button_text',
+        'title_guess',
+        'card_text',
         'image_url',
-        'image_drive_file_id',
-        'image_drive_link',
-        'image_file_name',
-        'image_upload_status',
-        'categories',
-        'tags',
-        'slug',
-        'reading_time',
     ];
-
-    protected $casts = [
-        'row_number' => 'integer',
-          'edition_number' => 'integer',
-        'post_id'    => 'integer',
-        'author_id'  => 'integer',
-        'date'       => 'datetime',
-        'modified'   => 'datetime',
-    ];
-
-    public function scopePublished($query)
-    {
-        return $query->where('status', 'publish');
-    }
 }
