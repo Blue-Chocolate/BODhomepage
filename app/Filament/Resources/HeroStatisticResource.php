@@ -17,7 +17,7 @@ class HeroStatisticResource extends Resource
     protected static ?string $model = HeroStatistic::class;
 
     protected static ?string $navigationIcon   = 'heroicon-o-chart-bar';
-    protected static ?string $navigationGroup  = 'إدارة الموقع';
+    protected static ?string $navigationGroup       = 'إدارة المنظومة الاجتماعية';
     protected static ?string $navigationLabel  = 'شريط الإحصاءات';
     protected static ?string $modelLabel       = 'إحصائية';
     protected static ?string $pluralModelLabel = 'إحصاءات الهيرو';
@@ -119,7 +119,7 @@ class HeroStatisticResource extends Resource
                         'warning' => 'both',
                     ])
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'waleda'  => 'والدة حلم',
+                        'waleda'  => 'ولادة حلم ',
                         'manzuma' => 'المنظومة',
                         'both'    => 'كلاهما',
                     }),

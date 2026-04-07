@@ -18,7 +18,7 @@ class HeroSlideResource extends Resource
     protected static ?string $model = HeroSlide::class;
 
     protected static ?string $navigationIcon        = 'heroicon-o-photo';
-    protected static ?string $navigationGroup       = 'إدارة الموقع';
+    protected static ?string $navigationGroup       = 'إدارة المنظومة الاجتماعية';
     protected static ?string $navigationLabel       = 'شرائح الهيرو';
     protected static ?string $modelLabel            = 'شريحة هيرو';
     protected static ?string $pluralModelLabel      = 'شرائح الهيرو';
