@@ -129,7 +129,7 @@ Route::prefix('hero')->group(function () {
 });
  
 // ── Protected (Sanctum / admin token) ────────────────────────────────────────
-Route::prefix('hero')->middleware(['auth:sanctum'])->group(function () {
+Route::prefix('hero')->group(function () {
  
     // ── Slides ───────────────────────────────────────────────────────────────
     Route::get('/slides',                    [HeroController::class, 'slides']);         // paginated list
