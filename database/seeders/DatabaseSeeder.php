@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
         ProceduralEvidenceSeeder::class,
         AnnualPlanSeeder::class,
         DigitalSolutionLinkSeeder ::class,
-        
+        SocialInitiativeSeeder::class,
 
         
     ]);

@@ -146,3 +146,9 @@ Route::prefix('hero')->group(function () {
     Route::delete('/statistics/{id}',       [HeroController::class, 'destroyStat']);
     Route::patch('/statistics/reorder',     [HeroController::class, 'reorderStats']);
 });
+
+use App\Http\Controllers\Api\SocialInitiativeController;
+Route::prefix('social-initiatives')->group(function () {
+    Route::get('/', [SocialInitiativeController::class, 'index']);
+    Route::get('/{socialInitiative}', [SocialInitiativeController::class, 'show']);
+});
