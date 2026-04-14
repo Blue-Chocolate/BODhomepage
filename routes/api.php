@@ -90,7 +90,7 @@ Route::prefix('organizations')->group(function () {
     Route::post('/{organization}/approve',  [OrganizationController::class, 'approve']);
     Route::post('/{organization}/reject',   [OrganizationController::class, 'reject']);
 });
-use App\Http\Controllers\StrategicPlanController;
+use App\Http\Controllers\Api\StrategicPlanController;
 
 Route::prefix('strategic-plans')->group(function () {
     Route::get('/', [StrategicPlanController::class, 'index']);

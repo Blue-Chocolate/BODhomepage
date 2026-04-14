@@ -1,188 +1,259 @@
 <?php
-// app/Filament/Resources/StrategicPlanResource.php
 
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\StrategicPlanResource\Pages;
 use App\Models\StrategicPlan;
-use Filament\Forms;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 
 class StrategicPlanResource extends Resource
 {
     protected static ?string $model = StrategicPlan::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-document-chart-bar';
+
     protected static ?string $navigationLabel = 'الخطط الاستراتيجية';
+
     protected static ?string $modelLabel = 'خطة استراتيجية';
+
     protected static ?string $pluralModelLabel = 'الخطط الاستراتيجية';
-    protected static ?string $navigationGroup = 'المحتوى';
+
+    protected static ?int $navigationSort = 1;
+
+    // ─── Form ────────────────────────────────────────────────────────────────
 
     public static function form(Form $form): Form
     {
         return $form->schema([
 
-            Forms\Components\Section::make('المعلومات الأساسية')
-                ->columns(2)
+            Section::make('المعلومات الأساسية')
                 ->schema([
-                    Forms\Components\TextInput::make('title')
+                    TextInput::make('post_id')
+                        ->label('Post ID')
+                        ->numeric()
+                        ->required()
+                        ->unique(ignoreRecord: true),
+
+                    TextInput::make('title')
                         ->label('العنوان')
                         ->required()
-                        ->maxLength(255)
-                        ->live(onBlur: true)
-                        ->afterStateUpdated(fn($state, callable $set) =>
-                            $set('slug', Str::slug($state))
-                        )
+                        ->maxLength(500)
                         ->columnSpanFull(),
 
-                    Forms\Components\TextInput::make('slug')
-                        ->label('الرابط المختصر')
-                        ->required()
-                        ->unique(ignoreRecord: true)
-                        ->maxLength(255),
+                    Textarea::make('excerpt')
+                        ->label('المقتطف')
+                        ->rows(3)
+                        ->columnSpanFull(),
 
-                    Forms\Components\Select::make('status')
+                    Textarea::make('content_text')
+                        ->label('المحتوى')
+                        ->rows(6)
+                        ->columnSpanFull(),
+
+                    Select::make('status')
                         ->label('الحالة')
                         ->options([
                             'publish' => 'منشور',
                             'draft'   => 'مسودة',
                             'private' => 'خاص',
+                            'trash'   => 'محذوف',
                         ])
                         ->default('publish')
                         ->required(),
 
-                    Forms\Components\DateTimePicker::make('published_at')
-                        ->label('تاريخ النشر')
-                        ->default(now()),
-
-                    Forms\Components\TextInput::make('category_id')
+                    TextInput::make('categories')
                         ->label('التصنيف')
-                        ->numeric()
-                        ->nullable(),
-                ]),
+                        ->numeric(),
 
-            Forms\Components\Section::make('المحتوى')
+                    DateTimePicker::make('post_date')
+                        ->label('تاريخ النشر'),
+
+                    DateTimePicker::make('post_modified')
+                        ->label('تاريخ التعديل'),
+
+                    TextInput::make('slug')
+                        ->label('Slug')
+                        ->maxLength(500)
+                        ->columnSpanFull(),
+
+                    TextInput::make('link')
+                        ->label('رابط المنشور')
+                        ->url()
+                        ->columnSpanFull(),
+                ])
+                ->columns(2),
+
+            Section::make('الروابط الخارجية')
                 ->schema([
-                    Forms\Components\Textarea::make('excerpt')
-                        ->label('المقتطف')
-                        ->rows(3)
-                        ->nullable(),
+                    TextInput::make('execution_report')
+                        ->label('رابط تقرير التنفيذ')
+                        ->url()
+                        ->columnSpanFull(),
 
-                    Forms\Components\Textarea::make('content_text')
-                        ->label('المحتوى')
-                        ->rows(8)
-                        ->nullable(),
+                    TextInput::make('association_website')
+                        ->label('موقع الجمعية')
+                        ->url()
+                        ->columnSpanFull(),
                 ]),
 
-            Forms\Components\Section::make('الصور')
-                ->columns(3)
+            Section::make('الصور')
                 ->schema([
-                    Forms\Components\TextInput::make('image_url')
-                        ->label('رابط الصورة الرئيسية')
+                    TextInput::make('image_url')
+                        ->label('الصورة البارزة (URL)')
                         ->url()
-                        ->nullable(),
+                        ->columnSpanFull(),
 
-                    Forms\Components\TextInput::make('content_image_1')
-                        ->label('رابط صورة المحتوى الأولى')
+                    TextInput::make('content_image_1')
+                        ->label('صورة المحتوى 1 (URL)')
                         ->url()
-                        ->nullable(),
+                        ->columnSpanFull(),
 
-                    Forms\Components\TextInput::make('content_image_2')
-                        ->label('رابط صورة المحتوى الثانية')
+                    TextInput::make('content_image_2')
+                        ->label('صورة المحتوى 2 (URL)')
                         ->url()
-                        ->nullable(),
+                        ->columnSpanFull(),
                 ]),
 
-            Forms\Components\Section::make('بيانات Google Drive')
+            Section::make('Google Drive — الصورة البارزة')
                 ->collapsed()
-                ->columns(3)
                 ->schema([
-                    Forms\Components\TextInput::make('image_drive_file_id')
-                        ->label('معرّف الصورة الرئيسية')
-                        ->nullable(),
+                    TextInput::make('image_drive_file_id')->label('File ID'),
+                    TextInput::make('image_drive_link')->label('Drive Link')->url(),
+                    TextInput::make('image_file_name')->label('اسم الملف'),
+                    Select::make('image_upload_status')
+                        ->label('حالة الرفع')
+                        ->options(['uploaded' => 'مرفوع', 'pending' => 'معلق', 'failed' => 'فشل']),
+                ])
+                ->columns(2),
 
-                    Forms\Components\TextInput::make('content_image_1_drive_file_id')
-                        ->label('معرّف الصورة الأولى')
-                        ->nullable(),
+            Section::make('Google Drive — صورة المحتوى 1')
+                ->collapsed()
+                ->schema([
+                    TextInput::make('content_image_1_drive_file_id')->label('File ID'),
+                    TextInput::make('content_image_1_drive_link')->label('Drive Link')->url(),
+                    TextInput::make('content_image_1_file_name')->label('اسم الملف'),
+                    Select::make('content_image_1_upload_status')
+                        ->label('حالة الرفع')
+                        ->options(['uploaded' => 'مرفوع', 'pending' => 'معلق', 'failed' => 'فشل']),
+                ])
+                ->columns(2),
 
-                    Forms\Components\TextInput::make('content_image_2_drive_file_id')
-                        ->label('معرّف الصورة الثانية')
-                        ->nullable(),
+            Section::make('Google Drive — صورة المحتوى 2')
+                ->collapsed()
+                ->schema([
+                    TextInput::make('content_image_2_drive_file_id')->label('File ID'),
+                    TextInput::make('content_image_2_drive_link')->label('Drive Link')->url(),
+                    TextInput::make('content_image_2_file_name')->label('اسم الملف'),
+                    Select::make('content_image_2_upload_status')
+                        ->label('حالة الرفع')
+                        ->options(['uploaded' => 'مرفوع', 'pending' => 'معلق', 'failed' => 'فشل']),
+                ])
+                ->columns(2),
 
-                    Forms\Components\TextInput::make('post_id')
-                        ->label('معرّف المنشور الأصلي (WordPress)')
-                        ->numeric()
-                        ->nullable(),
-                ]),
         ]);
     }
+
+    // ─── Table ───────────────────────────────────────────────────────────────
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image_url')
+                ImageColumn::make('image_url')
                     ->label('الصورة')
                     ->circular(false)
-                    ->width(60)
-                    ->height(40),
+                    ->height(50)
+                    ->width(80),
 
-                Tables\Columns\TextColumn::make('title')
+                TextColumn::make('post_id')
+                    ->label('Post ID')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('title')
                     ->label('العنوان')
                     ->searchable()
-                    ->sortable()
-                    ->limit(50),
+                    ->limit(60)
+                    ->tooltip(fn ($record) => $record->title),
 
-                Tables\Columns\BadgeColumn::make('status')
+                TextColumn::make('status')
                     ->label('الحالة')
-                    ->formatStateUsing(fn($state) => match($state) {
-                        'publish' => 'منشور',
-                        'draft'   => 'مسودة',
-                        'private' => 'خاص',
-                        default   => $state,
-                    })
-                    ->colors([
-                        'success' => 'publish',
-                        'warning' => 'draft',
-                        'danger'  => 'private',
-                    ]),
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'publish' => 'success',
+                        'draft'   => 'warning',
+                        'private' => 'info',
+                        'trash'   => 'danger',
+                        default   => 'gray',
+                    }),
 
-                Tables\Columns\TextColumn::make('category_id')
+                TextColumn::make('categories')
                     ->label('التصنيف')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('published_at')
+                TextColumn::make('post_date')
                     ->label('تاريخ النشر')
-                    ->dateTime('d M Y')
+                    ->dateTime('Y-m-d')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('post_id')
-                    ->label('معرّف WP')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('image_upload_status')
+                    ->label('رفع الصورة')
+                    ->badge()
+                    ->color(fn (?string $state): string => match ($state) {
+                        'uploaded' => 'success',
+                        'pending'  => 'warning',
+                        'failed'   => 'danger',
+                        default    => 'gray',
+                    }),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->label('الحالة')
                     ->options([
                         'publish' => 'منشور',
                         'draft'   => 'مسودة',
                         'private' => 'خاص',
+                        'trash'   => 'محذوف',
+                    ]),
+
+                SelectFilter::make('image_upload_status')
+                    ->label('حالة رفع الصورة')
+                    ->options([
+                        'uploaded' => 'مرفوع',
+                        'pending'  => 'معلق',
+                        'failed'   => 'فشل',
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()->label('تعديل'),
-                Tables\Actions\DeleteAction::make()->label('حذف'),
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()->label('حذف المحدد'),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('published_at', 'desc');
+            ->defaultSort('post_date', 'desc');
     }
+
+    // ─── Pages ───────────────────────────────────────────────────────────────
 
     public static function getPages(): array
     {
