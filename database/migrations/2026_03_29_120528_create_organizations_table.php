@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('organizations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->nullable();
+            $table->string('email')->nullable()->unique();
             $table->enum('type', ['government', 'foundation', 'non_profit']);
             $table->string('liscense_number');
             $table->timestamp('evaluation_date')->nullable();
@@ -27,6 +27,8 @@ return new class extends Migration
             $table->enum('approval_status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamp('approved_at')->nullable();
             $table->timestamps();
+
+            $table->index('email');
         });
     }
 

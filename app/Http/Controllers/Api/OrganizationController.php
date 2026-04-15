@@ -36,6 +36,7 @@ class OrganizationController extends Controller
         'name'                  => 'required|string|max:255',
         'liscense_number'       => 'required|string|unique:organizations,liscense_number',
         'evaluation_duration'   => 'nullable|integer|min:0',
+        'evaluation_date'       => 'nullable|date',
         'type'                  => ['required', Rule::in(['government', 'foundation', 'non_profit'])],
         'evaluator_name'        => 'nullable|string|max:255',
         'evaluation_team'       => 'nullable|string|max:255',
