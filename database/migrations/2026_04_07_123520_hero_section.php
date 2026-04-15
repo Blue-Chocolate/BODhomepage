@@ -16,10 +16,8 @@ return new class extends Migration
 
             // Bilingual content
             $table->string('title_ar');
-            $table->string('title_en');
             $table->string('logo_url')->nullable(); // Optional logo image URL
             $table->text('subtitle_ar')->nullable();
-            $table->text('subtitle_en')->nullable();
 
             // Background media
             $table->string('background_image')->nullable();        // stored path (disk: public)
@@ -36,7 +34,6 @@ return new class extends Migration
 
             // CTA – Primary
             $table->string('cta_primary_text_ar')->nullable();
-            $table->string('cta_primary_text_en')->nullable();
             $table->string('cta_primary_url')->nullable();
             $table->enum('cta_primary_style', ['solid', 'outline', 'ghost'])->default('solid');
 

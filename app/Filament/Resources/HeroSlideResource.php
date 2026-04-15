@@ -78,8 +78,7 @@ class HeroSlideResource extends Resource
                                 Grid::make(3)->schema([
                                     Forms\Components\TextInput::make('cta_primary_text_ar')
                                         ->label('النص (عربي)'),
-                                    Forms\Components\TextInput::make('cta_primary_text_en')
-                                        ->label('Text (English)'),
+                                  
                                     Forms\Components\Select::make('cta_primary_style')
                                         ->label('النمط')
                                         ->options([
