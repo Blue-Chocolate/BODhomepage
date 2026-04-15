@@ -56,10 +56,7 @@ class HeroSlideResource extends Resource
                                     ->label('العنوان الرئيسي (عربي) *')
                                     ->required()
                                     ->maxLength(255),
-                                Forms\Components\TextInput::make('title_en')
-                                    ->label('Main Title (English) *')
-                                    ->required()
-                                    ->maxLength(255),
+                               
                             ]),
                             Forms\Components\FileUpload::make('logo_url')
     ->label('Logo')
@@ -70,9 +67,7 @@ class HeroSlideResource extends Resource
                                 Forms\Components\Textarea::make('subtitle_ar')
                                     ->label('النص الفرعي (عربي)')
                                     ->rows(2),
-                                Forms\Components\Textarea::make('subtitle_en')
-                                    ->label('Subtitle (English)')
-                                    ->rows(2),
+                             
                             ]),
                         ]),
 
