@@ -21,17 +21,6 @@ return new class extends Migration
         $table->string('subheadline')->nullable();
         $table->text('text')->nullable();
         $table->json('background_image')->nullable();
-        // CTA
-        $table->string('cta_text')->nullable();
-        $table->string('cta_url')->nullable();
-        $table->string('cta_color')->default('#000000');
-        $table->boolean('cta_visible')->default(true);
-        $table->boolean('cta_new_tab')->default(false);
-        // Behavior
-        $table->boolean('is_sticky')->default(true);
-        $table->boolean('show_language_switcher')->default(true);
-        $table->timestamps();
-
         $table->integer('organizations_count')->default(0);
         $table->integer('experience_years')->default(0);
         $table->integer('projects_count')->default(0);

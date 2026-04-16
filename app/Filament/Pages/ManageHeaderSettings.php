@@ -23,66 +23,37 @@ class ManageHeaderSettings extends Page
         $this->form->fill(HeaderSetting::getInstance()->toArray());
     }
 
-    public function form(Form $form): Form
-    {
-        return $form->schema([
+   public function form(Form $form): Form
+{
+    return $form->schema([
+        Forms\Components\Section::make('Logo')->schema([
+            Forms\Components\FileUpload::make('logo_image')
+                ->label('Logo Image (SVG/PNG)')
+                ->image()
+                ->acceptedFileTypes(['image/svg+xml', 'image/png', 'image/jpeg'])
+                ->directory('logo')
+                ->columnSpanFull(),
+            Forms\Components\TextInput::make('logo_text')->label('Logo Text'),
+            Forms\Components\TextInput::make('logo_url')->label('Logo URL'),
+        ]),
 
-            Forms\Components\Section::make('اللوجو')->schema([
-                Forms\Components\FileUpload::make('logo_image')
-                    ->label('صورة اللوجو (SVG / PNG)')
-                    ->image()
-                    ->acceptedFileTypes(['image/svg+xml', 'image/png', 'image/jpeg'])
-                    ->directory('logo')
-                    ->columnSpanFull(),
+        Forms\Components\Section::make('Content')->schema([
+            Forms\Components\TextInput::make('headline')->label('Headline'),
+            Forms\Components\KeyValue::make('subheadline')->label('Subheadline (key-value pairs)'),
+            Forms\Components\KeyValue::make('text')->label('Text (key-value pairs)'),
+            Forms\Components\FileUpload::make('background_image')
+                ->label('Background Image')
+                ->image()
+                ->directory('backgrounds'),
+        ]),
 
-                Forms\Components\TextInput::make('logo_text')
-                    ->label('اسم الموقع عربي'),
-
-                Forms\Components\TextInput::make('logo_text_en')
-                    ->label('اسم الموقع إنجليزي'),
-
-                Forms\Components\TextInput::make('logo_url')
-                    ->label('رابط اللوجو')
-                    ->default('/'),
-            ])->columns(2),
-
-            Forms\Components\Section::make('زر CTA')->schema([
-                Forms\Components\Toggle::make('cta_visible')
-                    ->label('إظهار الزر')
-                    ->live()
-                    ->columnSpanFull(),
-
-                Forms\Components\TextInput::make('cta_text')
-                    ->label('نص الزر عربي')
-                    ->visible(fn(Forms\Get $get) => $get('cta_visible')),
-
-                Forms\Components\TextInput::make('cta_text_en')
-                    ->label('نص الزر إنجليزي')
-                    ->visible(fn(Forms\Get $get) => $get('cta_visible')),
-
-                Forms\Components\TextInput::make('cta_url')
-                    ->label('رابط الزر')
-                    ->visible(fn(Forms\Get $get) => $get('cta_visible')),
-
-                Forms\Components\ColorPicker::make('cta_color')
-                    ->label('لون الزر')
-                    ->visible(fn(Forms\Get $get) => $get('cta_visible')),
-
-                Forms\Components\Toggle::make('cta_new_tab')
-                    ->label('فتح في تبويب جديد')
-                    ->visible(fn(Forms\Get $get) => $get('cta_visible')),
-            ])->columns(2),
-
-            Forms\Components\Section::make('سلوك الهيدر')->schema([
-                Forms\Components\Toggle::make('is_sticky')
-                    ->label('Sticky عند التمرير'),
-
-                Forms\Components\Toggle::make('show_language_switcher')
-                    ->label('إظهار محوّل اللغة'),
-            ])->columns(2),
-
-        ])->statePath('data');
-    }
+        Forms\Components\Section::make('Stats')->schema([
+            Forms\Components\TextInput::make('organizations_count')->numeric()->label('Organizations Count'),
+            Forms\Components\TextInput::make('experience_years')->numeric()->label('Experience Years'),
+            Forms\Components\TextInput::make('projects_count')->numeric()->label('Projects Count'),
+        ]),
+    ]);
+}
 
     protected function getFormActions(): array
     {
