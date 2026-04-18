@@ -28,6 +28,8 @@ class DatabaseSeeder extends Seeder
         AnnualPlanSeeder::class,
         DigitalSolutionLinkSeeder ::class,
         SocialInitiativeSeeder::class,
+        OrganizationSeeder::class,
+        ComplianceAssessmentSeeder::class,
 
         
     ]);
