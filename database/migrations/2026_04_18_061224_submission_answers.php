@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('submission_answers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('assessment_submission_id')->constrained()->cascadeOnDelete();
+            $table->unique(['assessment_submission_id', 'assessment_question_id'], 'sub_answers_unique');
             $table->foreignId('assessment_question_id')->constrained()->cascadeOnDelete();
 
             // Score: 0 = not applicable, 1–5 = compliance scale
