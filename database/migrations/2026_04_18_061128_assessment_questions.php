@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('assessment_questions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('assessment_axis_id')->constrained()->cascadeOnDelete();
+            $table->unsignedTinyInteger('weight')->default(1)->after('order');
             $table->string('title');                          // e.g. "وجود مجلس إدارة فعّال"
             $table->text('description')->nullable();
             $table->text('guidance')->nullable();             // helper text for evaluators

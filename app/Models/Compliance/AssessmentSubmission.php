@@ -75,8 +75,10 @@ class AssessmentSubmission extends Model
 
     /**
      * Recalculate and persist the overall score.
-     * Simple average: avg of axis averages (each axis = avg of its question scores).
-     * Score 0 ("not applicable") is excluded from averages.
+     *
+     * Per-axis score  = Σ(score × weight) / Σ(weight)  — weighted average
+     * Overall score   = simple average of all axis scores (each axis counts equally)
+     * Score 0 ("not applicable") is excluded from all averages.
      */
     public function recalculateScore(): void
     {
@@ -85,21 +87,32 @@ class AssessmentSubmission extends Model
             'answers',
         ]);
 
-        $answersMap = $this->answers->keyBy('assessment_question_id');
-        $axisAverages = [];
+        $answersMap  = $this->answers->keyBy('assessment_question_id');
+        $axisScores  = [];
 
         foreach ($this->assessment->axes as $axis) {
-            $scores = $axis->questions
-                ->map(fn ($q) => $answersMap->get($q->id)?->score ?? null)
-                ->filter(fn ($score) => $score !== null && $score > 0); // exclude 0 = N/A
+            $weightedSum = 0;
+            $totalWeight = 0;
 
-            if ($scores->isNotEmpty()) {
-                $axisAverages[] = $scores->average();
+            foreach ($axis->questions as $question) {
+                $answer = $answersMap->get($question->id);
+
+                // Skip unanswered or "not applicable" (score = 0)
+                if (! $answer || $answer->score === 0) {
+                    continue;
+                }
+
+                $weightedSum += $answer->score * $question->weight;
+                $totalWeight += $question->weight;
+            }
+
+            if ($totalWeight > 0) {
+                $axisScores[] = $weightedSum / $totalWeight;
             }
         }
 
-        $this->overall_score = count($axisAverages)
-            ? round(array_sum($axisAverages) / count($axisAverages), 2)
+        $this->overall_score = count($axisScores)
+            ? round(array_sum($axisScores) / count($axisScores), 2)
             : null;
 
         $this->saveQuietly();

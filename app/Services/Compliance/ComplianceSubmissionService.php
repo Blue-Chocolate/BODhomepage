@@ -72,22 +72,31 @@ class ComplianceSubmissionService
     // ─── Scoring Helpers ──────────────────────────────────────────────────────────
 
     /**
-     * Calculate score for a specific axis only.
+     * Calculate weighted score for a specific axis.
+     * Formula: Σ(score × weight) / Σ(weight) — excludes score=0 (not applicable)
      */
     public function calcAxisScore(AssessmentSubmission $submission, AssessmentAxis $axis): ?float
     {
         $axis->load('questions');
 
-        $questionIds = $axis->questions->pluck('id');
+        // Map question_id => weight
+        $weightMap = $axis->questions->pluck('weight', 'id');
 
-        $scores = SubmissionAnswer::query()
+        $answers = SubmissionAnswer::query()
             ->where('assessment_submission_id', $submission->id)
-            ->whereIn('assessment_question_id', $questionIds)
+            ->whereIn('assessment_question_id', $weightMap->keys())
             ->where('score', '>', 0)    // exclude 0 = "not applicable"
-            ->pluck('score');
+            ->get(['assessment_question_id', 'score']);
 
-        return $scores->isNotEmpty()
-            ? round($scores->average(), 2)
+        if ($answers->isEmpty()) {
+            return null;
+        }
+
+        $weightedSum = $answers->sum(fn ($a) => $a->score * $weightMap->get($a->assessment_question_id, 1));
+        $totalWeight = $answers->sum(fn ($a) => $weightMap->get($a->assessment_question_id, 1));
+
+        return $totalWeight > 0
+            ? round($weightedSum / $totalWeight, 2)
             : null;
     }
 
