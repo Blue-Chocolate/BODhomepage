@@ -10,16 +10,13 @@ return new class extends Migration
     {
         Schema::create('submission_answers', function (Blueprint $table) {
             $table->id();
-            $table->unique(['assessment_submission_id', 'assessment_question_id'], 'sub_answers_unique');
+            $table->foreignId('assessment_submission_id')->constrained()->cascadeOnDelete();
             $table->foreignId('assessment_question_id')->constrained()->cascadeOnDelete();
-
-            // Score: 0 = not applicable, 1–5 = compliance scale
             $table->unsignedTinyInteger('score')->default(0);
-
-            $table->text('notes')->nullable();       // evaluator notes per question
+            $table->text('notes')->nullable();
             $table->timestamps();
 
-            $table->unique(['assessment_submission_id', 'assessment_question_id']);
+            $table->unique(['assessment_submission_id', 'assessment_question_id'], 'sub_answers_unique');
         });
     }
 

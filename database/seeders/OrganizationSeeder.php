@@ -10,17 +10,50 @@ class OrganizationSeeder extends Seeder
     public function run(): void
     {
         $organizations = [
-            ['name' => 'جمعية البر الخيرية',          'type' => 'جمعية',  'contact_person' => 'أحمد محمد'],
-            ['name' => 'مؤسسة الأمل للتنمية',         'type' => 'مؤسسة',  'contact_person' => 'سارة علي'],
-            ['name' => 'مبادرة شباب المستقبل',         'type' => 'مبادرة', 'contact_person' => 'خالد عبدالله'],
-            ['name' => 'جمعية رعاية الأسرة',           'type' => 'جمعية',  'contact_person' => 'فاطمة حسن'],
-            ['name' => 'مؤسسة التطوع والعطاء',         'type' => 'مؤسسة',  'contact_person' => 'عمر يوسف'],
+            [
+                'name'                => 'جمعية البر الخيرية',
+                'type'                => 'non_profit',
+                'liscense_number'     => 'NP-2024-001',
+                'representative_name' => 'أحمد محمد',
+                'approval_status'     => 'approved',
+                'approved_at'         => now(),
+            ],
+            [
+                'name'                => 'مؤسسة الأمل للتنمية',
+                'type'                => 'foundation',
+                'liscense_number'     => 'FN-2024-002',
+                'representative_name' => 'سارة علي',
+                'approval_status'     => 'approved',
+                'approved_at'         => now(),
+            ],
+            [
+                'name'                => 'مبادرة شباب المستقبل',
+                'type'                => 'non_profit',
+                'liscense_number'     => 'NP-2024-003',
+                'representative_name' => 'خالد عبدالله',
+                'approval_status'     => 'pending',
+            ],
+            [
+                'name'                => 'جمعية رعاية الأسرة',
+                'type'                => 'non_profit',
+                'liscense_number'     => 'NP-2024-004',
+                'representative_name' => 'فاطمة حسن',
+                'approval_status'     => 'approved',
+                'approved_at'         => now(),
+            ],
+            [
+                'name'                => 'مؤسسة التطوع والعطاء',
+                'type'                => 'foundation',
+                'liscense_number'     => 'FN-2024-005',
+                'representative_name' => 'عمر يوسف',
+                'approval_status'     => 'pending',
+            ],
         ];
 
         foreach ($organizations as $org) {
             Organization::firstOrCreate(
-                ['name' => $org['name']],
-                array_merge($org, ['is_active' => true])
+                ['liscense_number' => $org['liscense_number']],
+                $org
             );
         }
     }
