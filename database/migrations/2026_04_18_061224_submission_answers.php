@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('notes')->nullable();       // evaluator notes per question
             $table->timestamps();
 
-            $table->unique(['assessment_submission_id', 'assessment_question_id'], 'sub_answers_unique');
+            $table->unique(['assessment_submission_id', 'assessment_question_id']);
         });
     }
 
