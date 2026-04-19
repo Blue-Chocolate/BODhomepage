@@ -35,22 +35,23 @@ class SubmissionController extends Controller
         return response()->json($submissions);
     }
 
-    /**
-     * POST /api/compliance/submissions/initiate
-     */
-    public function initiate(InitiateSubmissionRequest $request): JsonResponse
-    {
-        $submission = $this->service->initiate(
-            $request->assessment_id,
-            $request->organization_id,
-            auth()->id(),
-        );
+  /**
+ * POST /api/compliance/submissions/initiate
+ */
+public function initiate(InitiateSubmissionRequest $request): JsonResponse
+{
+    $organization = auth()->user(); // هو الـ Organization نفسه
 
-        return response()->json([
-            'message' => 'تم إنشاء التقييم أو استرجاعه بنجاح',
-            'data'    => $this->service->buildResult($submission),
-        ], 201);
-    }
+    $submission = $this->service->initiate(
+        $request->assessment_id,
+        $organization->id,
+    );
+
+    return response()->json([
+        'message' => 'تم إنشاء التقييم أو استرجاعه بنجاح',
+        'data'    => $this->service->buildResult($submission),
+    ], 201);
+}
 
     /**
      * GET /api/compliance/submissions/{submission}

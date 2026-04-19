@@ -57,8 +57,10 @@ class HomepageHeroSectionResource extends Resource
 
                     Forms\Components\TextInput::make('background_video_url')
                         ->label('Background Video URL')
-                        ->url()
-                        ->placeholder('https://...')
+                        ->video()
+                        ->placeholder('اضف مقطع هنا ')
+                        ->disk('public')
+                        ->directory('homepage/hero')
                         ->columnSpanFull(),
                 ]),
         ]);

@@ -12,7 +12,6 @@ class InitiateSubmissionRequest extends FormRequest
     {
         return [
             'assessment_id'   => ['required', 'integer', 'exists:assessments,id'],
-            'organization_id' => ['required', 'integer', 'exists:organizations,id'],
         ];
     }
 

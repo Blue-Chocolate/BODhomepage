@@ -13,19 +13,18 @@ class ComplianceSubmissionService
 {
     // ─── Submission Lifecycle ─────────────────────────────────────────────────────
 
-    public function initiate(int $assessmentId, int $organizationId, ?int $userId = null): AssessmentSubmission
-    {
-        return AssessmentSubmission::firstOrCreate(
-            [
-                'assessment_id'   => $assessmentId,
-                'organization_id' => $organizationId,
-            ],
-            [
-                'evaluated_by' => $userId,
-                'status'       => 'draft',
-            ]
-        );
-    }
+public function initiate(int $assessmentId, int $organizationId): AssessmentSubmission
+{
+    return AssessmentSubmission::firstOrCreate(
+        [
+            'assessment_id'   => $assessmentId,
+            'organization_id' => $organizationId,
+        ],
+        [
+            'status' => 'draft',
+        ]
+    );
+}
 
     /**
      * Save answers for a SINGLE AXIS only (5 questions at a time).
