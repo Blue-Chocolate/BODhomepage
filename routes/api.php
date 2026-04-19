@@ -180,3 +180,5 @@ Route::prefix('compliance')->middleware(['auth:sanctum'])->group(function () {
     Route::post('submissions/{submission}/decide',          [SubmissionController::class, 'decide']);
     Route::post('submissions/{submission}/recommendations', [SubmissionController::class, 'syncRecommendations']);
 });
+use App\Http\Controllers\Api\HomepageHeroSectionController;
+Route::get('homepage/hero',    [HomepageHeroSectionController::class, 'show']);
