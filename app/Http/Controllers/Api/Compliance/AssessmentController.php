@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Compliance;
 
 use App\Http\Controllers\Controller;
 use App\Models\Compliance\Assessment;
+use App\Models\Compliance\AssessmentAxis;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -20,6 +21,35 @@ class AssessmentController extends Controller
             ->get(['id', 'title', 'description', 'period_year', 'opens_at', 'closes_at']);
 
         return response()->json(['data' => $assessments]);
+    }
+
+    /**
+     * GET /api/compliance/assessments/{assessment}/axes/{axis}/questions
+     * Questions for a single axis only.
+     */
+    public function axisQuestions(Assessment $assessment, AssessmentAxis $axis): JsonResponse
+    {
+        // Guard: axis must belong to this assessment
+        abort_if($axis->assessment_id !== $assessment->id, 404, 'هذا المحور لا ينتمي للتقييم المحدد');
+
+        $axis->load(['questions' => fn ($q) => $q->where('is_active', true)->orderBy('order')]);
+
+        return response()->json([
+            'data' => [
+                'axis_id'                 => $axis->id,
+                'title'                   => $axis->title,
+                'description'             => $axis->description,
+                'recommendation_platform' => $axis->recommendation_platform,
+                'order'                   => $axis->order,
+                'questions'               => $axis->questions->map(fn ($q) => [
+                    'id'       => $q->id,
+                    'title'    => $q->title,
+                    'guidance' => $q->guidance,
+                    'weight'   => $q->weight,
+                    'order'    => $q->order,
+                ]),
+            ],
+        ]);
     }
 
     /**
