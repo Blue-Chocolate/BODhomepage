@@ -12,6 +12,22 @@ class StoreBlogRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $items = $this->json()->all();
+
+        if (empty($items)) return;
+
+        $isBulk = is_array($items) && array_is_list($items);
+
+        if ($isBulk) {
+            $mapped = array_map(fn($item) => $this->mapFields($item), $items);
+            $this->replace($mapped);
+        } else {
+            $this->replace($this->mapFields($items));
+        }
+    }
+
     public function rules(): array
     {
         if ($this->isBulk()) {
@@ -66,9 +82,9 @@ class StoreBlogRequest extends FormRequest
         if (!$this->isBulk()) return;
 
         $validator->after(function ($validator) {
-            $items = $this->getParsedBody();
+            $items = $this->all();
 
-            // validate slug uniqueness in one query
+            // slug uniqueness in one query
             $slugs      = collect($items)->pluck('slug')->unique()->filter();
             $takenSlugs = \App\Models\Blog::whereIn('slug', $slugs)->pluck('slug');
 
@@ -92,23 +108,36 @@ class StoreBlogRequest extends FormRequest
         });
     }
 
-    // ✅ الفيكس الرئيسي — يقرأ الـ JSON صح
     public function isBulk(): bool
     {
-        $body = $this->getParsedBody();
+        $body = $this->json()->all();
         return is_array($body) && array_is_list($body);
     }
 
-    // helper مركزي لقراءة الـ body
-    private function getParsedBody(): array
+    private function mapFields(array $item): array
     {
-        $body = $this->json()->all();
-
-        // لو فاضي جرب all() العادي
-        if (empty($body)) {
-            $body = $this->all();
-        }
-
-        return $body;
+        return [
+            'title'             => $item['عنوان المقال'] ?? $item['title'] ?? null,
+            'slug'              => $item['slug'] ?? null,
+            'image_url'         => $item['صورة المقال'] ?? $item['image_url'] ?? null,
+            'published_at'      => $item['Date'] ?? $item['published_at'] ?? null,
+            'is_published'      => $item['is_published'] ?? false,
+            // old
+            'short_description' => $item['معلومات عن المقال'] ?? $item['short_description'] ?? null,
+            'content'           => $item['المقال'] ?? $item['content'] ?? null,
+            'author'            => $item['author'] ?? null,
+            'blog_category_id'  => $item['blog_category_id'] ?? null,
+            // new
+            'product_id'        => $item['product_id'] ?? null,
+            'keyword'           => $item['Keyword'] ?? $item['keyword'] ?? null,
+            'keyword_strength'  => $item['قوة الكلمة المفتاحية'] ?? $item['keyword_strength'] ?? null,
+            'search_intent'     => $item['البحث عن'] ?? $item['search_intent'] ?? null,
+            'category_name'     => $item['تصنيف المقال'] ?? $item['category_name'] ?? null,
+            'tags'              => $item['Tags'] ?? $item['tags'] ?? null,
+            'meta_description'  => $item['وصف مختصر للمقال'] ?? $item['meta_description'] ?? null,
+            'summary'           => $item['نبذه عن المقال'] ?? $item['summary'] ?? null,
+            'content_html'      => $item['المقال_HTML'] ?? $item['content_html'] ?? null,
+            'word_count'        => $item['عدد الكلمات'] ?? $item['word_count'] ?? null,
+        ];
     }
 }
