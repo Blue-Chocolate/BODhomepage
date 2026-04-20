@@ -23,34 +23,31 @@ class AssessmentController extends Controller
         return response()->json(['data' => $assessments]);
     }
 
+   
     /**
-     * GET /api/compliance/assessments/{assessment}/axes/{axis}/questions
-     * Questions for a single axis only.
-     */
-    public function axisQuestions(Assessment $assessment, AssessmentAxis $axis): JsonResponse
-    {
-        // Guard: axis must belong to this assessment
-        abort_if($axis->assessment_id !== $assessment->id, 404, 'هذا المحور لا ينتمي للتقييم المحدد');
+ * GET /api/compliance/axes/{axis}/questions
+ */
+public function axisQuestions(AssessmentAxis $axis): JsonResponse
+{
+    $axis->load(['questions' => fn ($q) => $q->where('is_active', true)->orderBy('order')]);
 
-        $axis->load(['questions' => fn ($q) => $q->where('is_active', true)->orderBy('order')]);
-
-        return response()->json([
-            'data' => [
-                'axis_id'                 => $axis->id,
-                'title'                   => $axis->title,
-                'description'             => $axis->description,
-                'recommendation_platform' => $axis->recommendation_platform,
-                'order'                   => $axis->order,
-                'questions'               => $axis->questions->map(fn ($q) => [
-                    'id'       => $q->id,
-                    'title'    => $q->title,
-                    'guidance' => $q->guidance,
-                    'weight'   => $q->weight,
-                    'order'    => $q->order,
-                ]),
-            ],
-        ]);
-    }
+    return response()->json([
+        'data' => [
+            'axis_id'                 => $axis->id,
+            'title'                   => $axis->title,
+            'description'             => $axis->description,
+            'recommendation_platform' => $axis->recommendation_platform,
+            'order'                   => $axis->order,
+            'questions'               => $axis->questions->map(fn ($q) => [
+                'id'       => $q->id,
+                'title'    => $q->title,
+                'guidance' => $q->guidance,
+                'weight'   => $q->weight,
+                'order'    => $q->order,
+            ]),
+        ],
+    ]);
+}
 
     /**
      * GET /api/compliance/assessments/{assessment}

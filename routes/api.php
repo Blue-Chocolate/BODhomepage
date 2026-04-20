@@ -161,8 +161,7 @@ Route::prefix('compliance')->middleware(['auth:sanctum'])->group(function () {
     // ── Assessments (templates) ───────────────────────────────────────────────
     Route::get('assessments',                                          [AssessmentController::class, 'index']);
     Route::get('assessments/{assessment}',                             [AssessmentController::class, 'show']);
-    Route::get('assessments/{assessment}/axes/{axis}/questions',       [AssessmentController::class, 'axisQuestions']);
- 
+    Route::get('axes/{axis}/questions',                                [AssessmentController::class, 'axisQuestions']); 
     // ── Submissions ───────────────────────────────────────────────────────────
     Route::get('submissions',                        [SubmissionController::class, 'index']);
     Route::post('submissions/initiate',              [SubmissionController::class, 'initiate']);
