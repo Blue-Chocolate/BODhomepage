@@ -226,18 +226,19 @@ public function initiate(int $assessmentId, int $organizationId): AssessmentSubm
         ]);
 
         return [
-            'submission' => [
-                'id'                  => $submission->id,
-                'status'              => $submission->status,
-                'overall_score'       => $submission->overall_score,
-                'compliance_level'    => $submission->compliance_level,
-                'submitted_at'        => $submission->submitted_at,
-                'reviewed_at'         => $submission->reviewed_at,
-                'evaluator_notes'     => $submission->evaluator_notes,
-                'management_action'   => $submission->management_action,
-                'management_decision' => $submission->management_decision,
-                'reassess_months'     => $submission->reassess_months,
-            ],
+          'submission' => [
+    'id'                  => $submission->id,
+    'status'              => $submission->status,
+    'overall_score'       => $submission->overall_score,
+    'compliance_level'    => $submission->compliance_level['label'] ?? null,  // ← النص بس
+    'compliance_color'    => $submission->compliance_level['color'] ?? null,  // ← اللون
+    'submitted_at'        => $submission->submitted_at,
+    'reviewed_at'         => $submission->reviewed_at,
+    'evaluator_notes'     => $submission->evaluator_notes,
+    'management_action'   => $submission->management_action,
+    'management_decision' => $submission->management_decision,
+    'reassess_months'     => $submission->reassess_months,
+],
             'assessment' => [
                 'id'          => $submission->assessment->id,
                 'title'       => $submission->assessment->title,
