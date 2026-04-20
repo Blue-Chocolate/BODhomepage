@@ -16,29 +16,52 @@ class StoreBlogRequest extends FormRequest
     {
         if ($this->isBulk()) {
             return [
-                '*.title'             => ['required', 'string', 'max:255'],
-                '*.slug'              => ['nullable', 'string'],
-                '*.short_description' => ['required', 'string'],
-                '*.content'           => ['required', 'string'],
-                '*.author'            => ['required', 'string', 'max:255'],
-                '*.blog_category_id'  => ['required', 'integer'],
-                '*.image_path' => ['nullable', 'string'],
-                '*.published_at'      => ['nullable', 'date'],
-                '*.is_published'      => ['nullable', 'boolean'],
+                '*.title'              => ['required', 'string', 'max:255'],
+                '*.slug'               => ['nullable', 'string'],
+                '*.image_url'          => ['nullable', 'string'],
+                '*.published_at'       => ['nullable', 'date'],
+                '*.is_published'       => ['nullable', 'boolean'],
+                // old
+                '*.short_description'  => ['nullable', 'string'],
+                '*.content'            => ['nullable', 'string'],
+                '*.author'             => ['nullable', 'string', 'max:255'],
+                '*.blog_category_id'   => ['nullable', 'integer'],
+                // new
+                '*.product_id'         => ['nullable', 'string'],
+                '*.keyword'            => ['nullable', 'string'],
+                '*.keyword_strength'   => ['nullable', 'numeric'],
+                '*.search_intent'      => ['nullable', 'string'],
+                '*.category_name'      => ['nullable', 'string'],
+                '*.tags'               => ['nullable', 'string'],
+                '*.meta_description'   => ['nullable', 'string'],
+                '*.summary'            => ['nullable', 'string'],
+                '*.content_html'       => ['nullable', 'string'],
+                '*.word_count'         => ['nullable', 'integer'],
             ];
         }
 
         return [
-            'title'             => ['required', 'string', 'max:255'],
-            'slug'              => ['nullable', 'string', 'unique:blogs,slug'],
-            'short_description' => ['required', 'string'],
-            'content'           => ['required', 'string'],
-            'author'            => ['required', 'string', 'max:255'],
-            'blog_category_id'  => ['required', 'integer', 'exists:blog_categories,id'],
-           'image_path' => ['nullable', 'string'],
-
-            'published_at'      => ['nullable', 'date'],
-            'is_published'      => ['nullable', 'boolean'],
+            'title'              => ['required', 'string', 'max:255'],
+            'slug'               => ['nullable', 'string', 'unique:blogs,slug'],
+            'image_url'          => ['nullable', 'string'],
+            'published_at'       => ['nullable', 'date'],
+            'is_published'       => ['nullable', 'boolean'],
+            // old
+            'short_description'  => ['nullable', 'string'],
+            'content'            => ['nullable', 'string'],
+            'author'             => ['nullable', 'string', 'max:255'],
+            'blog_category_id'   => ['nullable', 'integer', 'exists:blog_categories,id'],
+            // new
+            'product_id'         => ['nullable', 'string'],
+            'keyword'            => ['nullable', 'string'],
+            'keyword_strength'   => ['nullable', 'numeric'],
+            'search_intent'      => ['nullable', 'string'],
+            'category_name'      => ['nullable', 'string'],
+            'tags'               => ['nullable', 'string'],
+            'meta_description'   => ['nullable', 'string'],
+            'summary'            => ['nullable', 'string'],
+            'content_html'       => ['nullable', 'string'],
+            'word_count'         => ['nullable', 'integer'],
         ];
     }
 
@@ -49,20 +72,21 @@ class StoreBlogRequest extends FormRequest
         $validator->after(function ($validator) {
             $items = $this->json()->all();
 
-            // Collect all unique category IDs in one query instead of 281
+            // validate category IDs in one query
             $categoryIds = collect($items)->pluck('blog_category_id')->unique()->filter();
             $validIds    = BlogCategory::whereIn('id', $categoryIds)->pluck('id');
 
             foreach ($items as $index => $item) {
-                if (!$validIds->contains($item['blog_category_id'] ?? null)) {
+                $catId = $item['blog_category_id'] ?? null;
+                if ($catId && !$validIds->contains($catId)) {
                     $validator->errors()->add(
                         "{$index}.blog_category_id",
-                        "The blog category id {$item['blog_category_id']} does not exist."
+                        "The blog category id {$catId} does not exist."
                     );
                 }
             }
 
-            // Check slug uniqueness in one query
+            // validate slug uniqueness in one query
             $slugs      = collect($items)->pluck('slug')->unique()->filter();
             $takenSlugs = \App\Models\Blog::whereIn('slug', $slugs)->pluck('slug');
 
@@ -76,26 +100,6 @@ class StoreBlogRequest extends FormRequest
             }
         });
     }
-    protected function prepareForValidation(): void
-{
-    if ($this->isBulk()) {
-        $items = collect($this->json()->all())->map(function ($item) {
-            if (isset($item['image_url'])) {
-                $item['image_path'] = $item['image_url'];
-                unset($item['image_url']);
-            }
-            return $item;
-        })->toArray();
-
-        $this->replace($items);
-    } else {
-        if ($this->has('image_url')) {
-            $this->merge([
-                'image_path' => $this->input('image_url'),
-            ]);
-        }
-    }
-}
 
     public function isBulk(): bool
     {
