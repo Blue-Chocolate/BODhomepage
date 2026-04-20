@@ -36,13 +36,17 @@ class BlogController extends Controller
         return response()->json($this->repository->findBySlug($slug));
     }
 
-    public function store(StoreBlogRequest $request, StoreBlogAction $action): JsonResponse
-    {
-        $data   = $request->isBulk() ? $request->json()->all() : $request->validated();
-        $result = $action->execute($data, $request->isBulk());
+public function store(StoreBlogRequest $request, StoreBlogAction $action): JsonResponse
+{
+    $isBulk = $request->isBulk();
+    $data   = $isBulk
+        ? $request->json()->all()
+        : $request->validated();
 
-        return response()->json($result, 201);
-    }
+    $result = $action->execute($data, $isBulk);
+
+    return response()->json($result, 201);
+}
 
     public function update(UpdateBlogRequest $request, Blog $blog, UpdateBlogAction $action): JsonResponse
     {
