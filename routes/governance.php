@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Route;
 |   3. POST   /programs/{id}/impact/beneficiaries   → تحديث سجلات المستفيدين
 */
 
-Route::prefix('governance')->middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
 
     // ── Programs ──────────────────────────────────────────────────────────────────
     Route::get('programs',                [ProgramController::class, 'index']);
