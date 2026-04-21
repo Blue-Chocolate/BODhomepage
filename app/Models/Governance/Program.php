@@ -24,6 +24,8 @@ class Program extends Model
         'resource_efficiency',
         'cost_per_beneficiary',
         'deleted_at',
+        'created_at',
+        'updated_at',
         'is_active',
     ];
 
