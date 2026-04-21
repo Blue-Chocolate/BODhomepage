@@ -23,6 +23,7 @@ class Program extends Model
         'execution_duration',
         'resource_efficiency',
         'cost_per_beneficiary',
+        'deleted_at',
         'is_active',
     ];
 
