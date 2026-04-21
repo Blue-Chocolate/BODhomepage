@@ -8,7 +8,6 @@ use App\Http\Requests\Compliance\SaveAxisAnswersRequest;
 use App\Http\Requests\Compliance\ManagementDecisionRequest;
 use App\Http\Requests\Compliance\SyncRecommendationsRequest;
 use App\Models\Compliance\AssessmentAxis;
-use App\Models\Compliance\Assessment;
 use App\Models\Compliance\AssessmentSubmission;
 use App\Services\Compliance\ComplianceSubmissionService;
 use Illuminate\Http\JsonResponse;
@@ -36,26 +35,22 @@ class SubmissionController extends Controller
         return response()->json($submissions);
     }
 
-  /**
- * POST /api/compliance/submissions/initiate
- */
-public function initiate(Request $request): JsonResponse
-{
-    // Backend بيجيب الـ assessment النشط تلقائياً
-    $assessment = Assessment::where('is_active', true)
-        ->latest()
-        ->firstOrFail();
+    /**
+     * POST /api/compliance/submissions/initiate
+     */
+    public function initiate(InitiateSubmissionRequest $request): JsonResponse
+    {
+        $submission = $this->service->initiate(
+            $request->assessment_id,
+            $request->organization_id,
+            auth()->id(),
+        );
 
-    $submission = $this->service->initiate(
-        $assessment->id,
-        auth()->user()->id,
-    );
-
-    return response()->json([
-        'message' => 'تم إنشاء التقييم أو استرجاعه بنجاح',
-        'data'    => $this->service->buildResult($submission),
-    ], 201);
-}
+        return response()->json([
+            'message' => 'تم إنشاء التقييم أو استرجاعه بنجاح',
+            'data'    => $this->service->buildResult($submission),
+        ], 201);
+    }
 
     /**
      * GET /api/compliance/submissions/{submission}
@@ -68,7 +63,7 @@ public function initiate(Request $request): JsonResponse
     }
 
     /**
-     * POST 
+     * POST /api/compliance/submissions/{submission}/axes/{axis}/answers
      *
      * Save answers for ONE axis at a time.
      *
@@ -107,18 +102,28 @@ public function initiate(Request $request): JsonResponse
         ]);
     }
 
-/**
- * POST /api/compliance/submissions/{submission}/submit
- */
-public function submit(AssessmentSubmission $submission): JsonResponse
-{
-    $submission = $this->service->submit($submission);
+    /**
+     * GET /api/compliance/submissions/{submission}/final-report
+     */
+    public function finalReport(AssessmentSubmission $submission): JsonResponse
+    {
+        return response()->json(
+            $this->service->buildFinalReport($submission)
+        );
+    }
 
-    return response()->json([
-        'message' => 'تم تقديم التقييم بنجاح',
-        'data'    => $this->service->buildResult($submission),
-    ]);
-}
+    /**
+     * POST /api/compliance/submissions/{submission}/submit
+     */
+    public function submit(AssessmentSubmission $submission): JsonResponse
+    {
+        $submission = $this->service->submit($submission);
+
+        return response()->json([
+            'message' => 'تم تقديم التقييم بنجاح',
+            'data'    => $this->service->buildResult($submission),
+        ]);
+    }
 
     /**
      * POST /api/compliance/submissions/{submission}/review

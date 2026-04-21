@@ -13,18 +13,19 @@ class ComplianceSubmissionService
 {
     // ─── Submission Lifecycle ─────────────────────────────────────────────────────
 
-public function initiate(int $assessmentId, int $organizationId): AssessmentSubmission
-{
-    return AssessmentSubmission::firstOrCreate(
-        [
-            'assessment_id'   => $assessmentId,
-            'organization_id' => $organizationId,
-        ],
-        [
-            'status' => 'draft',
-        ]
-    );
-}
+    public function initiate(int $assessmentId, int $organizationId, ?int $userId = null): AssessmentSubmission
+    {
+        return AssessmentSubmission::firstOrCreate(
+            [
+                'assessment_id'   => $assessmentId,
+                'organization_id' => $organizationId,
+            ],
+            [
+                'evaluated_by' => $userId,
+                'status'       => 'draft',
+            ]
+        );
+    }
 
     /**
      * Save answers for a SINGLE AXIS only (5 questions at a time).
@@ -212,6 +213,158 @@ public function initiate(int $assessmentId, int $organizationId): AssessmentSubm
         return $submission->fresh(['recommendations']);
     }
 
+    // ─── Final Report ─────────────────────────────────────────────────────────────
+
+    /**
+     * Full final report payload — used by the results page.
+     */
+    public function buildFinalReport(AssessmentSubmission $submission): array
+    {
+        $submission->load([
+            'assessment',
+            'organization',
+            'evaluator',
+            'answers',
+            'recommendations',
+            'assessment.axes.questions',
+        ]);
+
+        $answersMap  = $submission->answers->keyBy('assessment_question_id');
+        $answeredIds = $submission->answers->pluck('assessment_question_id')->toArray();
+
+        $completionAxes = [];
+        $axisBreakdown  = [];
+        $totalQuestions = 0;
+        $totalAnswered  = 0;
+
+        foreach ($submission->assessment->axes->sortBy('order') as $axis) {
+            $axisQuestionIds = $axis->questions->pluck('id')->toArray();
+            $axisAnswered    = count(array_intersect($axisQuestionIds, $answeredIds));
+            $axisTotal       = count($axisQuestionIds);
+            $axisScore       = $this->calcAxisScore($submission, $axis);
+            $axisLevel       = $this->resolveLevel($axisScore);
+
+            $totalQuestions += $axisTotal;
+            $totalAnswered  += $axisAnswered;
+
+            // Completion entry
+            $completionAxes[] = [
+                'axis_id'    => $axis->id,
+                'title'      => $axis->title,
+                'order'      => $axis->order,
+                'answered'   => $axisAnswered,
+                'total'      => $axisTotal,
+                'complete'   => $axisAnswered === $axisTotal,
+                'axis_score' => $axisScore,
+            ];
+
+            // Breakdown entry with questions + level
+            $questions = $axis->questions->sortBy('order')->map(function ($q) use ($answersMap) {
+                $answer = $answersMap->get($q->id);
+                return [
+                    'question_id' => $q->id,
+                    'title'       => $q->title,
+                    'weight'      => $q->weight,
+                    'score'       => $answer?->score,
+                    'notes'       => $answer?->notes,
+                ];
+            })->values()->toArray();
+
+            $axisBreakdown[] = [
+                'axis_id'                 => $axis->id,
+                'title'                   => $axis->title,
+                'order'                   => $axis->order,
+                'recommendation_platform' => $axis->recommendation_platform,
+                'axis_score'              => $axisScore,
+                'axis_level'              => $axisLevel['label'] ?? null,
+                'axis_color'              => $axisLevel['color'] ?? null,
+                'axis_message'            => $axisLevel['message'] ?? null,
+                'show_recommendation'     => $axisScore !== null && $axisScore < 4.5,
+                'questions'               => $questions,
+            ];
+        }
+
+        $overallLevel = $this->resolveLevel($submission->overall_score);
+
+        return [
+            'submission' => [
+                'id'                  => $submission->id,
+                'status'              => $submission->status,
+                'overall_score'       => $submission->overall_score,
+                'compliance_level'    => $overallLevel['label'] ?? null,
+                'compliance_color'    => $overallLevel['color'] ?? null,
+                'compliance_message'  => $overallLevel['message'] ?? null,
+                'submitted_at'        => $submission->submitted_at,
+                'reviewed_at'         => $submission->reviewed_at,
+                'evaluator_notes'     => $submission->evaluator_notes,
+                'management_action'   => $submission->management_action,
+                'management_decision' => $submission->management_decision,
+                'reassess_months'     => $submission->reassess_months,
+            ],
+            'assessment' => [
+                'id'          => $submission->assessment->id,
+                'title'       => $submission->assessment->title,
+                'period_year' => $submission->assessment->period_year,
+            ],
+            'organization' => [
+                'id'   => $submission->organization->id,
+                'name' => $submission->organization->name,
+                'type' => $submission->organization->type,
+            ],
+            'completion' => [
+                'total_questions'    => $totalQuestions,
+                'answered_questions' => $totalAnswered,
+                'percentage'         => $totalQuestions > 0
+                    ? round(($totalAnswered / $totalQuestions) * 100, 1)
+                    : 0.0,
+                'axes' => $completionAxes,
+            ],
+            'axis_breakdown'  => $axisBreakdown,
+            'recommendations' => $submission->recommendations->map(fn ($r) => [
+                'priority'          => $r->priority,
+                'recommendation'    => $r->recommendation,
+                'responsible_party' => $r->responsible_party,
+            ])->values()->toArray(),
+        ];
+    }
+
+    // ─── Score Level Resolver ─────────────────────────────────────────────────────
+
+    private function resolveLevel(?float $score): ?array
+    {
+        if ($score === null) {
+            return null;
+        }
+
+        return match (true) {
+            $score >= 4.5 => [
+                'label'   => 'امتثال مؤسسي ناضج',
+                'color'   => 'green',
+                'message' => 'الجهة متقدمة جداً، الوضع مستقر وناضج مع أقل احتياج للتدخل.',
+            ],
+            $score >= 3.5 => [
+                'label'   => 'امتثال جيد',
+                'color'   => 'blue',
+                'message' => 'الأداء جيد، هناك تحسينات بسيطة فقط مطلوبة.',
+            ],
+            $score >= 2.5 => [
+                'label'   => 'امتثال متوسط',
+                'color'   => 'yellow',
+                'message' => 'الوضع متوسط، هناك حاجة لخطة تطوير واضحة.',
+            ],
+            $score >= 1.5 => [
+                'label'   => 'امتثال ضعيف',
+                'color'   => 'orange',
+                'message' => 'الوضع ضعيف، هذا المجال يحتاج تدخلاً وتحسيناً قريباً.',
+            ],
+            default => [
+                'label'   => 'خطر مؤسسي',
+                'color'   => 'red',
+                'message' => 'الوضع حرج، المنظمة تحتاج تدخلاً عاجلاً.',
+            ],
+        };
+    }
+
     // ─── Full Result Payload ─────────────────────────────────────────────────────
 
     public function buildResult(AssessmentSubmission $submission): array
@@ -226,19 +379,18 @@ public function initiate(int $assessmentId, int $organizationId): AssessmentSubm
         ]);
 
         return [
-          'submission' => [
-    'id'                  => $submission->id,
-    'status'              => $submission->status,
-    'overall_score'       => $submission->overall_score,
-    'compliance_level'    => $submission->compliance_level['label'] ?? null,  // ← النص بس
-    'compliance_color'    => $submission->compliance_level['color'] ?? null,  // ← اللون
-    'submitted_at'        => $submission->submitted_at,
-    'reviewed_at'         => $submission->reviewed_at,
-    'evaluator_notes'     => $submission->evaluator_notes,
-    'management_action'   => $submission->management_action,
-    'management_decision' => $submission->management_decision,
-    'reassess_months'     => $submission->reassess_months,
-],
+            'submission' => [
+                'id'                  => $submission->id,
+                'status'              => $submission->status,
+                'overall_score'       => $submission->overall_score,
+                'compliance_level'    => $submission->compliance_level,
+                'submitted_at'        => $submission->submitted_at,
+                'reviewed_at'         => $submission->reviewed_at,
+                'evaluator_notes'     => $submission->evaluator_notes,
+                'management_action'   => $submission->management_action,
+                'management_decision' => $submission->management_decision,
+                'reassess_months'     => $submission->reassess_months,
+            ],
             'assessment' => [
                 'id'          => $submission->assessment->id,
                 'title'       => $submission->assessment->title,

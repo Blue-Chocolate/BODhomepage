@@ -174,9 +174,10 @@ Route::prefix('compliance')->middleware(['auth:sanctum'])->group(function () {
     );
  
     // ── Lifecycle ─────────────────────────────────────────────────────────────
+    Route::get('submissions/{submission}/final-report',              [SubmissionController::class, 'finalReport']);
     Route::post('submissions/{submission}/submit',          [SubmissionController::class, 'submit']);
     Route::post('submissions/{submission}/review',          [SubmissionController::class, 'review']);
-    Route::post('submissions/{submission}/decide',          [SubmissionController::class, 'decide']);
+     Route::post('submissions/{submission}/decide',          [SubmissionController::class, 'decide']);
     Route::post('submissions/{submission}/recommendations', [SubmissionController::class, 'syncRecommendations']);
 });
 use App\Http\Controllers\Api\HomepageHeroSectionController;
