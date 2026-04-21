@@ -21,6 +21,8 @@ return new class extends Migration
                     $table->decimal('resource_efficiency', 5, 2)->nullable(); // ratio or percentage
                     $table->decimal('cost_per_beneficiary', 15, 2)->nullable();
                     $table->boolean('is_active')->default(true);
+                    $table->date('start_date')->nullable();
+                    $table->date('end_date')->nullable();
                     $table->softDeletes();
                     $table->timestamps();
             });

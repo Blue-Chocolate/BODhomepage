@@ -26,6 +26,8 @@ class Program extends Model
         'deleted_at',
         'created_at',
         'updated_at',
+        'start_date',
+        'end_date',
         'is_active',
     ];
 

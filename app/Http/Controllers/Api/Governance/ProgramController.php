@@ -26,6 +26,9 @@ class ProgramController extends Controller
             ->when($request->year, fn ($q) =>
                 $q->whereHas('quarters', fn ($q2) => $q2->where('year', $request->year))
             )
+            ->when($request->has('active'), fn ($q) =>
+                $q->where('is_active', $request->boolean('active'))
+            )
             ->get();
 
         return response()->json(['data' => $programs]);
@@ -41,12 +44,16 @@ class ProgramController extends Controller
             'status'             => ['required', 'in:planning,in_progress,completed,suspended'],
             'total_actual_cost'  => ['required', 'numeric', 'min:0'],
             'execution_duration' => ['nullable', 'integer', 'min:1'],
+            'start_date'         => ['nullable', 'date'],
+            'end_date'           => ['nullable', 'date', 'after_or_equal:start_date'],
             'resource_efficiency'=> ['required', 'numeric', 'min:0', 'max:100'],
+            'is_active'          => ['sometimes', 'boolean'],
         ]);
 
         $program = Program::create([
             ...$data,
-            'organization_id' => auth()->id(),
+            'organization_id'      => auth()->id(),
+            'cost_per_beneficiary' => 0, // placeholder until scoring runs
         ]);
 
         return response()->json([
@@ -79,13 +86,21 @@ class ProgramController extends Controller
             'status'             => ['sometimes', 'in:planning,in_progress,completed,suspended'],
             'total_actual_cost'  => ['sometimes', 'numeric', 'min:0'],
             'execution_duration' => ['nullable', 'integer', 'min:1'],
+            'start_date'         => ['nullable', 'date'],
+            'end_date'           => ['nullable', 'date', 'after_or_equal:start_date'],
             'resource_efficiency'=> ['sometimes', 'numeric', 'min:0', 'max:100'],
+            'is_active'          => ['sometimes', 'boolean'],
         ]);
 
         $program->update($data);
 
-        // إعادة حساب الدرجة إذا تغيرت بيانات مؤثرة
-        if (isset($data['status']) || isset($data['resource_efficiency']) || isset($data['execution_duration'])) {
+        $shouldRecalculate = isset($data['status'])
+            || isset($data['resource_efficiency'])
+            || isset($data['execution_duration'])
+            || isset($data['start_date'])      // affects timeline KPIs
+            || isset($data['end_date']);
+
+        if ($shouldRecalculate) {
             $year = $program->quarters()->max('year') ?? date('Y');
             $this->scoringService->calculate($program, $year);
         }
@@ -106,7 +121,7 @@ class ProgramController extends Controller
 
         $data = $request->validate([
             'quarter'       => ['required', 'in:Q1,Q2,Q3,Q4'],
-            'year'          => ['required', 'integer', 'min:2020', 'max:2030'],
+            'year'          => ['required', 'integer', 'min:2020', 'max:2099'],
             'budget'        => ['required', 'numeric', 'min:0'],
             'actual_cost'   => ['required', 'numeric', 'min:0'],
             'beneficiaries' => ['required', 'integer', 'min:0'],
@@ -117,7 +132,6 @@ class ProgramController extends Controller
             ['budget' => $data['budget'], 'actual_cost' => $data['actual_cost'], 'beneficiaries' => $data['beneficiaries']]
         );
 
-        // إعادة الحساب بعد كل ربع
         $score = $this->scoringService->calculate($program, $data['year']);
 
         return response()->json([
@@ -129,7 +143,6 @@ class ProgramController extends Controller
 
     /**
      * GET /api/governance/programs/{program}/score
-     * جيب النتيجة الكاملة
      */
     public function score(Request $request, Program $program): JsonResponse
     {
@@ -153,15 +166,21 @@ class ProgramController extends Controller
     private function buildScorePayload($score, Program $program): array
     {
         return [
-            'overall_score'          => $score->overall_score,
-            'classification'         => $score->classification['label'] ?? null,
-            'classification_color'   => $score->classification['color'] ?? null,
-            'pillars'                => $score->pillars,
+            'overall_score'        => $score->overall_score,
+            'classification'       => $score->classification['label'] ?? null,
+            'classification_color' => $score->classification['color'] ?? null,
+            'pillars'              => $score->pillars,
             'kpis' => [
-                'total_budget'          => $score->total_budget,
-                'total_beneficiaries'   => $score->total_beneficiaries,
-                'budget_variance'       => $score->budget_variance,
-                'cost_per_beneficiary'  => $score->cost_per_beneficiary,
+                'total_budget'         => $score->total_budget,
+                'total_beneficiaries'  => $score->total_beneficiaries,
+                'budget_variance'      => $score->budget_variance,
+                'cost_per_beneficiary' => $score->cost_per_beneficiary,
+            ],
+            'program_dates' => [
+                'start_date'         => $program->start_date,
+                'end_date'           => $program->end_date,
+                'execution_duration' => $program->execution_duration,
+                'is_active'          => $program->is_active,
             ],
             'quarters' => $program->quarters()
                 ->where('year', $score->year)
