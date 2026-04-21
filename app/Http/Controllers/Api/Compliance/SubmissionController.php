@@ -8,6 +8,7 @@ use App\Http\Requests\Compliance\SaveAxisAnswersRequest;
 use App\Http\Requests\Compliance\ManagementDecisionRequest;
 use App\Http\Requests\Compliance\SyncRecommendationsRequest;
 use App\Models\Compliance\AssessmentAxis;
+use App\Models\Compliance\Assessment;
 use App\Models\Compliance\AssessmentSubmission;
 use App\Services\Compliance\ComplianceSubmissionService;
 use Illuminate\Http\JsonResponse;
@@ -37,20 +38,24 @@ class SubmissionController extends Controller
 
     /**
      * POST /api/compliance/submissions/initiate
-     */
-    public function initiate(InitiateSubmissionRequest $request): JsonResponse
-    {
-        $submission = $this->service->initiate(
-            $request->assessment_id,
-            $request->organization_id,
-            auth()->id(),
-        );
+ */
+public function initiate(Request $request): JsonResponse
+{
+    // Backend بيجيب الـ assessment النشط تلقائياً
+    $assessment = Assessment::where('is_active', true)
+        ->latest()
+        ->firstOrFail();
 
-        return response()->json([
-            'message' => 'تم إنشاء التقييم أو استرجاعه بنجاح',
-            'data'    => $this->service->buildResult($submission),
-        ], 201);
-    }
+    $submission = $this->service->initiate(
+        $assessment->id,
+        auth()->user()->id,
+    );
+
+    return response()->json([
+        'message' => 'تم إنشاء التقييم أو استرجاعه بنجاح',
+        'data'    => $this->service->buildResult($submission),
+    ], 201);
+}
 
     /**
      * GET /api/compliance/submissions/{submission}
